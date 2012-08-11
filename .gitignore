@@ -1,0 +1,6 @@
+*.class
+AST/
+parser/
+beaver/
+scanner/
+.svn/

@@ -1,0 +1,54 @@
+aspect L1TypeCheck {
+	eq OwnerOfExpr.type() = getOperand().type().getOwnerType();
+
+	syn TypeDecl TypeDecl.getOwnerType() = unknownType();
+	eq L1ClassDecl.getOwnerType() {
+		if (!hasOwnerClassAccess()) return unknownType();
+		return getOwnerClassAccess().type();
+	}
+	eq L1GenericClassDecl.getOwnerType() {
+		if (!hasOwnerClassAccess()) return unknownType();
+		return getOwnerClassAccess().type();
+	}
+
+	public void OwnerOfExpr.typeCheck() {
+		TypeDecl ty = getOperand().type();
+		if (!ty.isClassDecl()) {
+			error("Ownerof must have a class type as operand");
+		}
+
+		TypeDecl oty = ty.getOwnerType();
+		if (oty.isUnknown()) {
+			error("ownerof cannot perform on class not owned by others");
+		}
+	}
+
+	// refine TypeCheck public void FieldDeclaration.typeCheck() {
+	// 	TypeCheck.FieldDeclaration.typeCheck();
+
+	// 	use hosttype
+	// 	check if the class is declared in wrong places
+	// 	TypeDecl dest = type();
+	// 	TypeDecl oty = dest.getOwnerType();
+	// 	if (!oty.isUnknown()) {
+	// 	    if ( oty != hostType() )
+	// 	        error(dest.typeName() + " is owned by another class");
+
+	// 	}
+	// }
+
+	refine TypeCheck public void ClassInstanceExpr.typeCheck() {
+		TypeCheck.ClassInstanceExpr.typeCheck();
+
+		TypeDecl dty = type();
+		TypeDecl oty = dty.getOwnerType();
+
+		if (!oty.isUnknown()) {
+			if (inStaticContext())
+				error(dty.typeName() + " cannot be instantial in static context");
+
+			if ( oty != hostType() )
+				error(dty.typeName() + " is owned by another class " + oty.typeName());
+		}
+	}
+}

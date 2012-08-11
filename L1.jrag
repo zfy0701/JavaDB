@@ -1,0 +1,5 @@
+aspect L1 {
+
+	eq L1ClassDecl.getOwnerClassAccess().nameType() = NameType.TYPE_NAME;
+	eq L1GenericClassDecl.getOwnerClassAccess().nameType() = NameType.TYPE_NAME;
+}
