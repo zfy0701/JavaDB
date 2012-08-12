@@ -1,6 +1,6 @@
 aspect L1CodeGen {
 	//TODO replace the runtime with static function call
-	
+
 	void OwnerOfExpr.emitOperation(CodeGeneration gen) {
 		String classname = "JavaDBRuntime";
 		String      desc = "()LJavaDBRuntime;";
@@ -46,8 +46,27 @@ aspect L1CodeGen {
 
 	refine GenericsCodegen public void VarAccess.createBCode(CodeGeneration gen) {
 		if (isParField()) {
-			 
-		} else 
+			FieldVariable fv = hostType().memberParFields(qualifier().type(), name());
+			createLoadQualifier(gen);
+
+			//load field name string
+			StringLiteral.push(gen, name());
+
+			String classname = "JavaDBRuntime";
+			String      desc = "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;";
+			String      name = "getFieldValue";
+			int index = gen.constantPool().addMethodref(classname, name, desc);
+			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
+
+			// if (f.isConstant() && (f.type().isPrimitive() || f.type().isString())) {
+			// 	if (!f.isStatic())
+			// 		fieldQualifierType().emitPop(gen);
+			// 	f.constant().createBCode(gen);
+			// } else if (requiresAccessor())
+			// 	f.createAccessor(fieldQualifierType()).emitInvokeMethod(gen, fieldQualifierType());
+			// else
+			// 	f.emitLoadField(gen, fieldQualifierType());
+		} else
 			refined(gen);
 	}
 
