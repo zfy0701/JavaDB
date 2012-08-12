@@ -1,18 +1,6 @@
 aspect L1CodeGen {
-	inh lazy int ClassInstanceExpr.localNum();
-
-	eq FieldDeclaration.getInit().localNum() {
-		int localNum = 1;
-		for (Iterator iter = hostType().constructors().iterator(); iter.hasNext(); ) {
-			ConstructorDecl c = (ConstructorDecl)iter.next();
-			int num = c.getNumParameter() == 0 ? c.localNumOfFirstParameter() :
-			c.getParameter(c.getNumParameter() - 1).localNum() + c.getParameter(c.getNumParameter() - 1).type().variableSize();
-			if (num > localNum)
-				localNum = num;
-		}
-		return localNum;
-	}
-
+	//TODO replace the runtime with static function call
+	
 	void OwnerOfExpr.emitOperation(CodeGeneration gen) {
 		String classname = "JavaDBRuntime";
 		String      desc = "()LJavaDBRuntime;";
@@ -55,4 +43,12 @@ aspect L1CodeGen {
 			gen.emit(Bytecode.INVOKEVIRTUAL, -2).add2(index);
 		}
 	}
+
+	refine GenericsCodegen public void VarAccess.createBCode(CodeGeneration gen) {
+		if (isParField()) {
+			 
+		} else 
+			refined(gen);
+	}
+
 }

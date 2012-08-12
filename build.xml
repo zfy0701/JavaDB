@@ -6,7 +6,7 @@
        gen             - generates java files
        genClean        - removes all generated files and their class files
 -->
-<project name="L1" default="build">
+<project name="JavaDB" default="build">
 
 <!-- location of JastAddJ -->
 <property name="JastAddJ" value="../JastAddJ"/>
@@ -109,7 +109,7 @@
         <file name="Keywords.flex"/>
       </filelist>
       <filelist dir=".">
-        <file name="L1.flex"/>
+        <file name="JavaDB.flex"/>
       </filelist>
       <filelist dir="${Java1.5Frontend}">
         <file name="java15keywords.flex"/>
@@ -168,7 +168,7 @@
       <fileset dir="." includes="**/*.class"/>
     </delete>
     <delete file="JavaCompiler.jar"/>
-	  <delete file="L1-src.jar"/>
+	  <delete file="JavaDB-src.jar"/>
 </target>
 
 <!-- remove generated source files and .class files -->
@@ -190,19 +190,19 @@
 
 <!-- build a source distribution -->
 <target name="source">
-  <jar destfile="L1-src.jar">
+  <jar destfile="JavaDB-src.jar">
 			<fileset dir="..">
         <!-- include backend source file -->
-				<include name="L1/JavaCompiler.java"/>
-				<include name="L1/**/*.ast"/>
-				<include name="L1/**/*.jrag"/>
-				<include name="L1/**/*.jadd"/>
-        <include name="L1/**/*.flex"/>
+				<include name="JavaDB/JavaCompiler.java"/>
+				<include name="JavaDB/**/*.ast"/>
+				<include name="JavaDB/**/*.jrag"/>
+				<include name="JavaDB/**/*.jadd"/>
+        <include name="JavaDB/**/*.flex"/>
         <!-- include buildfile used to build the backend -->
-				<include name="L1/build.xml"/>
+				<include name="JavaDB/build.xml"/>
         <!-- include readme and licence -->
-				<include name="L1/README"/>
-				<include name="L1/licences/BSD"/>
+				<include name="JavaDB/README"/>
+				<include name="JavaDB/licences/BSD"/>
 			</fileset>
       <manifest>
       </manifest>

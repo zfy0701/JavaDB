@@ -1,5 +1,176 @@
 aspect L1 {
 
+	eq FieldVariable.isStatic() = false;
+
+	/////////////////////// NameCheck
+
 	eq L1ClassDecl.getOwnerClassAccess().nameType() = NameType.TYPE_NAME;
 	eq L1GenericClassDecl.getOwnerClassAccess().nameType() = NameType.TYPE_NAME;
+	eq L2ClassDecl.getFieldParameter(int i).nameType() = NameType.TYPE_NAME;
+
+	eq L1GenericClassDecl.getOwnerClassAccess().lookupType(String name) {
+		SimpleSet c = addTypeVariables(SimpleSet.emptySet, name);
+		return !c.isEmpty() ? c : lookupType(name);
+	}
+
+	// refine VariableScope eq Expr.qualifiedLookupVariable(String name) {
+	//  //      return VariableScope.Expr.qualifiedLookupVariable(name);
+	//  if (type().accessibleFrom(hostType())) {
+	//      //check if the field is field variable
+
+	//      FieldVariable tmp = hostType().memberParFields(type(), name); //possibly hide the memberfields
+	//      if (tmp == null)
+	//          return keepAccessibleFields(type().memberFields(name));
+	//      return SimpleSet.emptySet.add(tmp);
+	//  }
+	//  return SimpleSet.emptySet;
+	// }
+
+	syn lazy boolean VarAccess.isParField() = isQualified() && hostType().memberParFields(qualifier().type(), name()) != null;
+
+	refine NameCheck  public void VarAccess.nameCheck() {
+		if (isParField()) {
+			//TODO: check subclass relation
+		} else 
+			refined();
+	}
+
+	//////////////////////// localNum
+
+	inh lazy int ClassInstanceExpr.localNum();
+
+	eq FieldDeclaration.getInit().localNum() {
+		int localNum = 1;
+		for (Iterator iter = hostType().constructors().iterator(); iter.hasNext(); ) {
+			ConstructorDecl c = (ConstructorDecl)iter.next();
+			int num = c.getNumParameter() == 0 ? c.localNumOfFirstParameter() :
+			          c.getParameter(c.getNumParameter() - 1).localNum() + c.getParameter(c.getNumParameter() - 1).type().variableSize();
+			if (num > localNum)
+				localNum = num;
+		}
+		return localNum;
+	}
+
+	///////////////////////
+
+	eq OwnerOfExpr.type() = getOperand().type().getOwnerType();
+
+	syn TypeDecl TypeDecl.getOwnerType() = unknownType();
+	eq L1ClassDecl.getOwnerType() {
+		if (!hasOwnerClassAccess()) return unknownType();
+		return getOwnerClassAccess().type();
+	}
+	eq L1GenericClassDecl.getOwnerType() {
+		if (!hasOwnerClassAccess()) return unknownType();
+		return getOwnerClassAccess().type();
+	}
 }
+
+
+aspect ParFields {
+
+	class Pair<A, B> {
+		private A first;
+		private B second;
+
+		public Pair(A first, B second) {
+			super();
+			this.first = first;
+			this.second = second;
+		}
+
+		public int hashCode() {
+			int hashFirst = first != null ? first.hashCode() : 0;
+			int hashSecond = second != null ? second.hashCode() : 0;
+
+			return (hashFirst + hashSecond) * hashSecond + hashFirst;
+		}
+
+		public boolean equals(Object other) {
+			if (other instanceof Pair) {
+				Pair<A, B> otherPair = (Pair<A, B>) other;
+				return ((this.first == otherPair.first || (this.first != null
+				&& otherPair.first != null && this.first
+				.equals(otherPair.first))) && (this.second == otherPair.second || (this.second != null
+				&& otherPair.second != null && this.second
+				.equals(otherPair.second))));
+			}
+
+			return false;
+		}
+
+		public String toString() {
+			return "(" + first + ", " + second + ")";
+		}
+
+		public A getFirst() {
+			return first;
+		}
+
+		public void setFirst(A first) {
+			this.first = first;
+		}
+
+		public B getSecond() {
+			return second;
+		}
+
+		public void setSecond(B second) {
+			this.second = second;
+		}
+	}
+
+
+	syn lazy FieldVariable TypeDecl.localParFields(TypeDecl type, String name) =
+	    localParFieldsMap().containsKey(new Pair(type, name)) ? (FieldVariable)localParFieldsMap().get(new Pair(type, name)) : null;
+
+	syn lazy HashMap TypeDecl.localParFieldsMap() = new HashMap();
+
+	eq L2ClassDecl.localParFieldsMap() {
+		HashMap parFields = new HashMap();
+		for (FieldVariable fieldVar : getFieldParameterList()) {
+			parFields.put(new Pair(fieldVar.getTargetTypeAccess().type(), fieldVar.getID()), fieldVar); //NOT SURE ABOUT THIS LINE
+		}
+		return parFields;
+	}
+
+	// syn lazy HashMap TypeDecl.memberParFieldsMap() = localParFieldsMap();
+
+	// eq L2ClassDecl.memberParFieldsMap() {
+	//  HashMap map = new HashMap(localFieldsMap());
+	//  if (hasSuperclass()) {
+	//      //TODO
+	//  }
+	//  return map;
+	// }
+
+	// public Iterator TypeDecl.parFieldsIterator() {
+	//   return new Iterator() {
+	//     private Iterator outer = memberParFieldsMap().values().iterator();
+	//     private Iterator inner = null;
+	//     public boolean hasNext() {
+	//       if((inner == null || !inner.hasNext()) && outer.hasNext())
+	//         inner = ((SimpleSet)outer.next()).iterator();
+	//       return inner != null ? inner.hasNext() : false;
+	//     }
+	//     public Object next() {
+	//       return inner.next();
+	//     }
+	//     public void remove() { throw new UnsupportedOperationException(); }
+	//   };
+	// }
+
+	syn lazy FieldVariable TypeDecl.memberParFields(TypeDecl type, String name) = null;
+
+	// member fields
+	eq ClassDecl.memberParFields(TypeDecl type, String name) {
+		FieldVariable field = localParFields(type, name);
+		if (field != null)
+			return field; // this causes hiding of fields in superclass and interfaces
+		if (hasSuperclass()) {
+			//TODO
+		}
+		return field;
+	}
+}
+

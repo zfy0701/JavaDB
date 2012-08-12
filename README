@@ -1,9 +1,9 @@
-This L1 impementation is an extension of JastAddJ, the JastAdd extensible Java compiler.
+This JavaDB impementation is an extension of JastAddJ, the JastAdd extensible Java compiler.
 The source code copyright is held by Torbjörn Ekman, tobbe@ekman.net
 
 BUILDING
 
-Place this module (L1) as a sibling directory to the JastAddJ directory (available at http://www.jastadd.org).
+Place this module (JavaDB) as a sibling directory to the JastAddJ directory (available at http://www.jastadd.org).
 
 You only need to have javac and Apache Ant installed in order to build. All other tools used are available in JastAddJ.
 

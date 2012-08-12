@@ -4,6 +4,7 @@ L1ClassDecl : ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Impl
 
 L1GenericClassDecl : GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access];
 
-L2ClassDecl : ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access];
+L2ClassDecl : L1ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access] FieldParameter:FieldVariable*;
 
-FieldVariable ::= [FieldTypeAccess:Access] [TargetTypeAccess:Access] <ID:String>
+//may need to remove : FieldDeclaration
+FieldVariable : MemberDecl ::= FieldTypeAccess:Access TargetTypeAccess:Access <ID:String>;

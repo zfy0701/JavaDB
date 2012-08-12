@@ -1,0 +1,55 @@
+/************************************** L1 Parser ******************************************/
+ClassDecl class_declaration =
+    modifiers.m? CLASS IDENTIFIER owner.o super.s? interfaces.i? class_body.b 
+      {:
+        return new L1ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, o); 
+      :}
+  ;
+
+ClassDecl class_declaration =
+    modifiers.m? CLASS IDENTIFIER type_parameters.p owner.o super.s? interfaces.i? class_body.b 
+      {:
+        return new L1GenericClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, p, o); 
+      :}
+  ;
+
+
+Opt owner =
+    OWNEDBY reference_type.t                       {: return new Opt(t); :}
+  ;
+
+Expr unary_expression = OWNEROF unary_expression.e {: return new OwnerOfExpr(e); :}
+  ;
+
+
+/************************************** L2 Parser ******************************************/
+ClassDecl class_declaration =
+    modifiers.m? CLASS IDENTIFIER field_parameters.fs owner.o? super.s? interfaces.i? class_body.b 
+      {:
+        return new L2ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, o, fs);  //todo
+      :}
+  ;
+
+List field_parameters =
+    LBRACK  field_parameter_list_1.l {:  return l;  :}
+  ;
+  
+List field_parameter_list =
+    field_parameter_list.l COMMA field_parameter.p {:  return l.add(p);  :}
+  | field_parameter.p {:  return new List().add(p);  :}
+  ;
+  
+List field_parameter_list_1 =
+    field_parameter_1.p {:  return new List().add(p);  :}
+  | field_parameter_list.l COMMA field_parameter_1.p {:  return l.add(p);  :}
+  ;
+  
+FieldVariable field_parameter =
+    type.t1 name.t2 DOT IDENTIFIER               {:  return new FieldVariable(t1, t2, IDENTIFIER);  :}
+  ;
+  
+FieldVariable field_parameter_1 =
+    type.t1 name.t2 DOT IDENTIFIER RBRACK          {:  return new FieldVariable(t1, t2, IDENTIFIER);  :}
+  ;
+
+//TODO instantial rule!
