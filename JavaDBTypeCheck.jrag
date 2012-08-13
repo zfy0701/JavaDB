@@ -15,13 +15,12 @@ aspect L1TypeCheck {
 		TypeCheck.ClassInstanceExpr.typeCheck();
 
 		TypeDecl dty = type();
-		TypeDecl oty = dty.getOwnerType();
-
-		if (!oty.isUnknown()) {
+	
+		if (dty.hasOwnerType()) {
+			TypeDecl oty = dty.getOwnerType();
 			if (inStaticContext())
 				error(dty.typeName() + " cannot be instantial in static context");
-
-			if ( oty != hostType() )
+			if (oty != hostType() )
 				error(dty.typeName() + " is owned by another class " + oty.typeName());
 		}
 	}

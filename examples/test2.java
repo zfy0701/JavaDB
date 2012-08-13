@@ -7,7 +7,7 @@ class B {
 
 class C extends B{
 	A<C> a = new A<C>();
-	A<B> a2 = new A<B>(); //this line should be wrong
+	//A<B> a2 = new A<B>(); //this line should be wrong
 }
 
 class A<T> ownedby T {

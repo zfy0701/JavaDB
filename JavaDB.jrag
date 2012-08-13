@@ -32,6 +32,14 @@ aspect L1 {
 		if (!hasOwnerClassAccess()) return unknownType();
 		return getOwnerClassAccess().type();
 	}
-}
+	eq RawClassDecl.getOwnerType() = original().getOwnerType();
+	eq ParClassDecl.getOwnerType() = substitute((TypeVariable)original().getOwnerType());
 
+	syn boolean TypeDecl.hasOwnerType() = false;
+	eq L1ClassDecl.hasOwnerType() = hasOwnerClassAccess();
+	eq L1GenericClassDecl.hasOwnerType() = hasOwnerClassAccess();
+	eq RawClassDecl.hasOwnerType() = original().hasOwnerType();
+	eq ParClassDecl.hasOwnerType() = original().hasOwnerType();
+
+}
 
