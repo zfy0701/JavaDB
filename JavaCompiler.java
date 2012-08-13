@@ -1,3 +1,5 @@
+//package JavaDB;
+
 import AST.*;
 
 class JavaCompiler extends Frontend {

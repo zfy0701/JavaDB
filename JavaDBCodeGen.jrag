@@ -2,46 +2,31 @@ aspect L1CodeGen {
 	//TODO replace the runtime with static function call
 
 	void OwnerOfExpr.emitOperation(CodeGeneration gen) {
-		String classname = "JavaDBRuntime";
-		String      desc = "()LJavaDBRuntime;";
-		String      name = "getInstance";
-		int index = gen.constantPool().addMethodref(classname, name, desc);
-		gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
-
 		getOperand().createBCode(gen);
 
-		desc = "(Ljava/lang/Object;)Ljava/lang/Object;";
-		name = "getParent";
-		index = gen.constantPool().addMethodref(classname, name, desc);
-		gen.emit(Bytecode.INVOKEVIRTUAL, -1).add2(index);
+		String classname = "javadb.JavaDBRuntime";
+		String      desc = "(Ljava/lang/Object;)Ljava/lang/Object;";
+		String      name = "getParent";
+		int index = gen.constantPool().addMethodref(classname, name, desc);
+		gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
 
 		gen.emitCheckCast(type());
 	}
 
 	refine CreateBCode public void ClassInstanceExpr.createBCode(CodeGeneration gen) {
-		//CreateBCode.ClassInstanceExpr.createBCode(gen);
 		refined(gen);
 
 		//L1: if this is the type is ownedby, then we do following
 		if (!type().getOwnerType().isUnknown()) {
 			gen.emitDup();
 
-			int num = localNum();
-			gen.emitStoreReference(num); //store to local
-
-			String classname = "JavaDBRuntime";
-			String      desc = "()LJavaDBRuntime;";
-			String      name = "getInstance";
-			int index = gen.constantPool().addMethodref(classname, name, desc);
-			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
-
-			gen.emitLoadReference(num); //push the new object to stack
 			gen.emitLoadReference(0); //push this to stack
-
-			desc = "(Ljava/lang/Object;Ljava/lang/Object;)V";
-			name = "putParent";
-			index = gen.constantPool().addMethodref(classname, name, desc);
-			gen.emit(Bytecode.INVOKEVIRTUAL, -2).add2(index);
+			
+			String classname = "javadb.JavaDBRuntime";
+			String desc = "(Ljava/lang/Object;Ljava/lang/Object;)V";
+			String name = "putParent";
+			int index = gen.constantPool().addMethodref(classname, name, desc);
+			gen.emit(Bytecode.INVOKESTATIC, -2).add2(index);
 		}
 	}
 
@@ -55,7 +40,7 @@ aspect L1CodeGen {
 
 			StringLiteral.push(gen, name()); //load field name string
 
-			String classname = "JavaDBRuntime";
+			String classname = "javadb.JavaDBRuntime";
 			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)V";
 			String      name = "setFieldValue";
 			int index = gen.constantPool().addMethodref(classname, name, desc);
@@ -76,7 +61,7 @@ aspect L1CodeGen {
 			//load field name string
 			StringLiteral.push(gen, name());
 
-			String classname = "JavaDBRuntime";
+			String classname = "javadb.JavaDBRuntime";
 			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;";
 			String      name = "getFieldValue";
 			int index = gen.constantPool().addMethodref(classname, name, desc);
@@ -93,7 +78,7 @@ aspect L1CodeGen {
 		List<FieldVariable> fieldPars = type().getFieldPars();
 		List<ParFieldAccess> fieldArgs = this.getFieldArguments();
 
-		String classname = "JavaDBRuntime";
+		String classname = "javadb.JavaDBRuntime";
 		String      desc = "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
 		String      name = "registerField";
 		int index = gen.constantPool().addMethodref(classname, name, desc);
@@ -102,10 +87,10 @@ aspect L1CodeGen {
 			FieldVariable fv = fieldPars.getChild(i);
 			ParFieldAccess fa = fieldArgs.getChild(i);
 
-			gen.emitDup(); 														//arg0: the new object
-			StringLiteral.push(gen, fv.getTargetTypeAccess().type().name());	//arg1: recieve name
-			StringLiteral.push(gen, fv.getFieldName()); 						//arg2: declaration name			
-			StringLiteral.push(gen, fa.getFieldName()); 						//arg3: actual field name
+			gen.emitDup(); 															//arg0: the new object
+			StringLiteral.push(gen, fv.getTargetTypeAccess().type().fullName());	//arg1: recieve name
+			StringLiteral.push(gen, fv.getFieldName()); 							//arg2: declaration name			
+			StringLiteral.push(gen, fa.getFieldName()); 							//arg3: actual field name
 
 			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
 		}
