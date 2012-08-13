@@ -55,34 +55,6 @@ aspect JavaDBNameCheck {
 		refined();
 	}
 
-	public void ParFieldClassInstanceExpr.nameCheck() {
-		super.nameCheck();
-
-		//check the match of argument
-		List<FieldVariable> fieldPars = type().getFieldPars();
-		List<ParFieldAccess> fieldArgs = this.getFieldArguments();
-
-		if (fieldPars.getNumChild() != fieldArgs.getNumChild()) {
-			error("The number of field arguments to instantiated the class cannot match the declaration.");
-		} else {
-			//TODO move TO typecheck
-			for (int i = 0; i < fieldArgs.getNumChild(); i++) {
-				FieldVariable fv = fieldPars.getChild(i);
-				ParFieldAccess fa = fieldArgs.getChild(i);
-
-				TypeDecl ty1 = fv.getFieldTypeAccess().type();
-				SimpleSet decls = fa.getTypeAccess().type().memberFields(fa.getFieldName());
-				if (decls.size() != 1)
-					error("unknow error");
-				TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
-				
-				if (!ty1.original().equals(ty2.original())) { //TODO THIS IS NOT RIGHT!!!!!!
-					error("The Type of field argument " + i + " cannot match to the declaration.");
-				}
-			}
-		}
-	}
-
 	refine NameCheck public void VarAccess.nameCheck() {
 		if (isParField()) {
 			//TODO: check subclass relation

@@ -23,6 +23,14 @@ aspect L1 {
 
 	eq OwnerOfExpr.type() = getOperand().type().getOwnerType();
 
+	refine TypeAnalysis eq VarAccess.type() {
+		if (isParField()) {
+			FieldVariable fieldVar = hostType().memberParFields(qualifier().type(), name());
+			return fieldVar.getFieldTypeAccess().type();
+		} else
+			return refined();
+	}
+
 	syn TypeDecl TypeDecl.getOwnerType() = unknownType();
 	eq L1ClassDecl.getOwnerType() {
 		if (!hasOwnerClassAccess()) return unknownType();
@@ -33,13 +41,12 @@ aspect L1 {
 		return getOwnerClassAccess().type();
 	}
 	eq RawClassDecl.getOwnerType() = original().getOwnerType();
-	eq ParClassDecl.getOwnerType() = substitute((TypeVariable)original().getOwnerType());
+	eq ParClassDecl.getOwnerType() = hasOwnerType() ? substitute((TypeVariable)original().getOwnerType()) : unknownType();
 
 	syn boolean TypeDecl.hasOwnerType() = false;
 	eq L1ClassDecl.hasOwnerType() = hasOwnerClassAccess();
 	eq L1GenericClassDecl.hasOwnerType() = hasOwnerClassAccess();
 	eq RawClassDecl.hasOwnerType() = original().hasOwnerType();
 	eq ParClassDecl.hasOwnerType() = original().hasOwnerType();
-
 }
 
