@@ -1,18 +1,22 @@
 //package examples;
 
-class B {
+public class B {
 	public int f = 1;
 	public int g = 10;
 }
 
-class A<T> with [int B.fname] {
+public class A<T> with [int B.fname] {
 	B b = new B();
 
 	void test() {
-
+		//Object o = 3;
+		//int x = (Integer)o;
+		
+		//Integer i = 3;
+		//int x = i;
 		System.out.println("test value = " + b.fname);
-		//b.fname = b.fname * 2;
-		//System.out.println("test value = " + b.fname);
+		b.fname = b.fname * 2;
+		System.out.println("test value = " + b.fname);
 	}
 
 	public static void main(String []args) {

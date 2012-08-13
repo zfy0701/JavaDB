@@ -1,4 +1,4 @@
-//package examples;
+package examples;
 
 class B {
 	public Integer f = 1;

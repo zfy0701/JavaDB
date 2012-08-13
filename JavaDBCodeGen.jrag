@@ -33,9 +33,11 @@ aspect L1CodeGen {
 
 	refine GenericsCodegen public void VarAccess.emitStore(CodeGeneration gen) {
 		if (isParField()) {
-			//FieldVariable fv = hostType().memberParFields(qualifier().type(), name());
-
 			//we already have the object and the target value in the stack
+
+			//now box the value
+			type().boxed().emitBoxingOperation(gen);
+
 			gen.emitLoadReference(0); //push this to stack
 
 			StringLiteral.push(gen, name()); //load field name string
@@ -53,8 +55,6 @@ aspect L1CodeGen {
 
 	refine GenericsCodegen public void VarAccess.createBCode(CodeGeneration gen) {
 		if (isParField()) {
-			//FieldVariable fv = hostType().memberParFields(qualifier().type(), name());
-
 			gen.emitLoadReference(0); //push this to stack
 			createLoadQualifier(gen); //push the object who have the field to stack
 
@@ -66,7 +66,14 @@ aspect L1CodeGen {
 			String      name = "getFieldValue";
 			int index = gen.constantPool().addMethodref(classname, name, desc);
 			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
-			gen.emitCheckCast(type());
+			
+			if (type().isPrimitive()) {
+				TypeDecl boxTy = type().boxed();
+				gen.emitCheckCast(boxTy);
+				boxTy.emitUnboxingOperation(gen);
+			} else
+				gen.emitCheckCast(type());
+
 		} else
 			refined(gen);
 	}
