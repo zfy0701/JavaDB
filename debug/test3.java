@@ -1,8 +1,8 @@
-
-//package examples;
+package debug;
 
 import java.lang.reflect.Field;
 import java.util.*;
+
 
 class Pair<A, B> {
 	private A first;
@@ -56,7 +56,7 @@ class Pair<A, B> {
 }
 
 
-public class JavaDBRuntime {
+class JavaDBRuntime {
 	private static JavaDBRuntime l1Runtime = new JavaDBRuntime();
 
 	private final HashMap<Object, Object> table = new HashMap<Object, Object>();
@@ -97,19 +97,35 @@ public class JavaDBRuntime {
 			return null;
 		}
 	}
-	
-	public static void setFieldValue(Object o, Object value, Object reciver, String parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, String>(reciver, parName));
-		try {
-			f.set(o, value);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static void Main(String args[]) {
-		JavaDBRuntime.getFieldValue(null, null, "asdf");
-		JavaDBRuntime.setFieldValue(null, null, null, null);
+		JavaDBRuntime.getFieldValue(null,null, "asdf");
 		JavaDBRuntime.registerField(null, null, null, null);
+	}
+}
+
+
+class B {
+	public Integer f = 1;
+}
+
+//class A<T> with [Integer B.fname] {
+class A<T> {
+	B b = new B();
+
+	void test() {
+		//Integer x = b.fname;
+		Integer x = (Integer)JavaDBRuntime.getFieldValue(this, b, "fname");
+		//TODO b.fname = 1
+		//System.out.println("test value should = 1 :");
+	}
+
+	public static void main(String []args) {
+		// A a1 = new A();//this is wrong [done]
+		// A a2 = new A<B> with [C.f] (); //no such type [done]
+		//A a3 = new A<B> with [B.g] (); //no such field [done]
+		//A a4 = new A<B> with [B.f] ();
+		A a4 = new A(); JavaDBRuntime.registerField(a4, "debug.B", "fname", "f");
+		a4.test();
 	}
 }

@@ -6,5 +6,10 @@ L1GenericClassDecl : GenericClassDecl ::= Modifiers <ID:String> [SuperClassAcces
 
 L2ClassDecl : L1ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access] FieldParameter:FieldVariable*;
 
-//may need to remove : FieldDeclaration
-FieldVariable : MemberDecl ::= FieldTypeAccess:Access TargetTypeAccess:Access <ID:String>;
+L2GenericClassDecl : L1GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access] FieldParameter:FieldVariable*;
+
+FieldVariable : MemberDecl ::= FieldTypeAccess:Access TargetTypeAccess:Access <FieldName:String>;
+
+ParFieldAccess : Access ::= TypeAccess:Access <FieldName:String>;
+
+ParFieldClassInstanceExpr : ClassInstanceExpr ::= FieldArgument:ParFieldAccess*;

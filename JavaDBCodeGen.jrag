@@ -1,0 +1,113 @@
+aspect L1CodeGen {
+	//TODO replace the runtime with static function call
+
+	void OwnerOfExpr.emitOperation(CodeGeneration gen) {
+		String classname = "JavaDBRuntime";
+		String      desc = "()LJavaDBRuntime;";
+		String      name = "getInstance";
+		int index = gen.constantPool().addMethodref(classname, name, desc);
+		gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
+
+		getOperand().createBCode(gen);
+
+		desc = "(Ljava/lang/Object;)Ljava/lang/Object;";
+		name = "getParent";
+		index = gen.constantPool().addMethodref(classname, name, desc);
+		gen.emit(Bytecode.INVOKEVIRTUAL, -1).add2(index);
+
+		gen.emitCheckCast(type());
+	}
+
+	refine CreateBCode public void ClassInstanceExpr.createBCode(CodeGeneration gen) {
+		//CreateBCode.ClassInstanceExpr.createBCode(gen);
+		refined(gen);
+
+		//L1: if this is the type is ownedby, then we do following
+		if (!type().getOwnerType().isUnknown()) {
+			gen.emitDup();
+
+			int num = localNum();
+			gen.emitStoreReference(num); //store to local
+
+			String classname = "JavaDBRuntime";
+			String      desc = "()LJavaDBRuntime;";
+			String      name = "getInstance";
+			int index = gen.constantPool().addMethodref(classname, name, desc);
+			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
+
+			gen.emitLoadReference(num); //push the new object to stack
+			gen.emitLoadReference(0); //push this to stack
+
+			desc = "(Ljava/lang/Object;Ljava/lang/Object;)V";
+			name = "putParent";
+			index = gen.constantPool().addMethodref(classname, name, desc);
+			gen.emit(Bytecode.INVOKEVIRTUAL, -2).add2(index);
+		}
+	}
+
+
+	refine GenericsCodegen public void VarAccess.emitStore(CodeGeneration gen) {
+		if (isParField()) {
+			//FieldVariable fv = hostType().memberParFields(qualifier().type(), name());
+
+			//we already have the object and the target value in the stack
+			gen.emitLoadReference(0); //push this to stack
+
+			StringLiteral.push(gen, name()); //load field name string
+
+			String classname = "JavaDBRuntime";
+			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)V";
+			String      name = "setFieldValue";
+			int index = gen.constantPool().addMethodref(classname, name, desc);
+			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
+
+		} else
+			refined(gen);
+	}
+
+
+	refine GenericsCodegen public void VarAccess.createBCode(CodeGeneration gen) {
+		if (isParField()) {
+			//FieldVariable fv = hostType().memberParFields(qualifier().type(), name());
+
+			gen.emitLoadReference(0); //push this to stack
+			createLoadQualifier(gen); //push the object who have the field to stack
+
+			//load field name string
+			StringLiteral.push(gen, name());
+
+			String classname = "JavaDBRuntime";
+			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;";
+			String      name = "getFieldValue";
+			int index = gen.constantPool().addMethodref(classname, name, desc);
+			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
+			gen.emitCheckCast(type());
+		} else
+			refined(gen);
+	}
+
+	public void  ParFieldClassInstanceExpr.createBCode(CodeGeneration gen) {
+		super.createBCode(gen);
+
+		//iterate and register field
+		List<FieldVariable> fieldPars = type().getFieldPars();
+		List<ParFieldAccess> fieldArgs = this.getFieldArguments();
+
+		String classname = "JavaDBRuntime";
+		String      desc = "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+		String      name = "registerField";
+		int index = gen.constantPool().addMethodref(classname, name, desc);
+
+		for (int i = 0; i < fieldArgs.getNumChild(); i++) {
+			FieldVariable fv = fieldPars.getChild(i);
+			ParFieldAccess fa = fieldArgs.getChild(i);
+
+			gen.emitDup(); 														//arg0: the new object
+			StringLiteral.push(gen, fv.getTargetTypeAccess().type().name());	//arg1: recieve name
+			StringLiteral.push(gen, fv.getFieldName()); 						//arg2: declaration name			
+			StringLiteral.push(gen, fa.getFieldName()); 						//arg3: actual field name
+
+			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
+		}
+	}
+}

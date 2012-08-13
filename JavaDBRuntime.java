@@ -1,9 +1,7 @@
-
-//package examples;
+package examples;
 
 import java.lang.reflect.Field;
 import java.util.*;
-
 class Pair<A, B> {
 	private A first;
 	private B second;
@@ -23,6 +21,7 @@ class Pair<A, B> {
 
 	public boolean equals(Object other) {
 		if (other instanceof Pair) {
+			@SuppressWarnings("unchecked")
 			Pair<A, B> otherPair = (Pair<A, B>) other;
 			return ((this.first == otherPair.first || (this.first != null
 					&& otherPair.first != null && this.first
@@ -88,8 +87,8 @@ public class JavaDBRuntime {
 		}
 	}
 
-	public static Object getFieldValue(Object reciver, Object o, String parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, String>(reciver, parName));
+	public static Object getFieldValue(Object o, String parName) {
+		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, String>(o, parName));
 		try {
 			return f.get(o);
 		} catch (Exception e) {
@@ -97,19 +96,9 @@ public class JavaDBRuntime {
 			return null;
 		}
 	}
-	
-	public static void setFieldValue(Object o, Object value, Object reciver, String parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, String>(reciver, parName));
-		try {
-			f.set(o, value);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static void Main(String args[]) {
-		JavaDBRuntime.getFieldValue(null, null, "asdf");
-		JavaDBRuntime.setFieldValue(null, null, null, null);
+		JavaDBRuntime.getFieldValue(null, "asdf");
 		JavaDBRuntime.registerField(null, null, null, null);
 	}
 }
