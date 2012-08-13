@@ -1,6 +1,5 @@
 //package examples;
 
-
 import java.util.*;
 
 public class VCollection<A, B> with [VCollection A.myfield] ownedby B {
@@ -13,8 +12,8 @@ public class VCollection<A, B> with [VCollection A.myfield] ownedby B {
 		this.col.add(a);
 
 		B b = ownerof this;
-		//a.myfield.col.add(b);  //this is not infinite loop
-		VCollection c = a.myfield;
+		a.myfield.col.add(b);  //this is not infinite loop
+		//VCollection c = a.myfield;
 	}
 }
 
@@ -26,4 +25,8 @@ public class People {
 public class Class {
 	public String classname;
 	public final VCollection<People, Class> ac = new VCollection<People, Class> with [People.bc] (new ArrayList<People>());	//~ inverse bc
+}
+
+public class Test {
+	//public static 
 }

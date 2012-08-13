@@ -97,7 +97,7 @@ aspect L1CodeGen {
 			ParFieldAccess fa = fieldArgs.getChild(i);
 
 			gen.emitDup(); 															//arg0: the new object
-			StringLiteral.push(gen, fv.getTargetTypeAccess().type().fullName());	//arg1: recieve name
+			StringLiteral.push(gen, fa.getTypeAccess().type().fullName());			//arg1: recieve name
 			StringLiteral.push(gen, fv.getFieldName()); 							//arg2: declaration name			
 			StringLiteral.push(gen, fa.getFieldName()); 							//arg3: actual field name
 

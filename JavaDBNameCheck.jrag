@@ -3,6 +3,7 @@ aspect JavaDBNameCheck {
 	eq L1ClassDecl.getOwnerClassAccess().nameType() = NameType.TYPE_NAME;
 	eq L1GenericClassDecl.getOwnerClassAccess().nameType() = NameType.TYPE_NAME;
 
+	//make geneic type visible for owner type
 	eq L1GenericClassDecl.getOwnerClassAccess().lookupType(String name) {
 		SimpleSet c = addTypeVariables(SimpleSet.emptySet, name);
 		return !c.isEmpty() ? c : lookupType(name);
@@ -10,6 +11,11 @@ aspect JavaDBNameCheck {
 
 	eq L2ClassDecl.getFieldParameter(int i).nameType() = NameType.TYPE_NAME;
 	eq L2GenericClassDecl.getFieldParameter(int i).nameType() = NameType.TYPE_NAME;
+	
+	eq L2GenericClassDecl.getFieldParameter(int i).lookupType(String name) {
+		SimpleSet c = addTypeVariables(SimpleSet.emptySet, name);
+		return !c.isEmpty() ? c : lookupType(name);
+	}
 
 	eq ParFieldAccess.getTypeAccess().nameType() = NameType.TYPE_NAME;
 
@@ -70,7 +76,7 @@ aspect JavaDBNameCheck {
 					error("unknow error");
 				TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
 				
-				if (!ty1.original().equals(ty2.original())) {
+				if (!ty1.original().equals(ty2.original())) { //TODO THIS IS NOT RIGHT!!!!!!
 					error("The Type of field argument " + i + " cannot match to the declaration.");
 				}
 			}
