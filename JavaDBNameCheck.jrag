@@ -70,7 +70,7 @@ aspect JavaDBNameCheck {
 					error("unknow error");
 				TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
 				
-				if (!ty1.equals(ty2)) {
+				if (!ty1.original().equals(ty2.original())) {
 					error("The Type of field argument " + i + " cannot match to the declaration.");
 				}
 			}
@@ -92,4 +92,11 @@ aspect JavaDBNameCheck {
       		error("no field named " + getFieldName() + " is accessible");
 		}
 	}
+
+	rewrite PackageAccess {
+    when(!duringSyntacticClassification() && hasPrevExpr() && prevExpr() instanceof VarAccess)
+    to Access {
+    	return new VarAccess(name(), start(), end());     	
+    }
+  }
 }

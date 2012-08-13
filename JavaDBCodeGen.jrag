@@ -35,8 +35,9 @@ aspect L1CodeGen {
 		if (isParField()) {
 			//we already have the object and the target value in the stack
 
-			//now box the value
-			type().boxed().emitBoxingOperation(gen);
+			//now box the value if it is primitive, only isPrimitive seems have bugs
+			if (!type().isReferenceType() && type().isPrimitive())
+				type().boxed().emitBoxingOperation(gen);
 
 			gen.emitLoadReference(0); //push this to stack
 
@@ -67,7 +68,8 @@ aspect L1CodeGen {
 			int index = gen.constantPool().addMethodref(classname, name, desc);
 			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
 			
-			if (type().isPrimitive()) {
+			//now box the value if it is primitive, only isPrimitive seems have bugs
+			if (!type().isReferenceType() && type().isPrimitive()) {
 				TypeDecl boxTy = type().boxed();
 				gen.emitCheckCast(boxTy);
 				boxTy.emitUnboxingOperation(gen);

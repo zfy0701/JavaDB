@@ -1,11 +1,11 @@
-package examples;
+//package examples;
 
-class B {
+public class B {
 	public Integer f = 1;
 	public String g = "as";
 }
 
-class A<T> with [Integer B.fname, String B.f2] {
+public class A<T> with [Integer B.fname, String B.f2] {
 	B b = new B();
 
 	void test() {

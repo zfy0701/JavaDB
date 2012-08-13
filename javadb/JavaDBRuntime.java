@@ -65,10 +65,6 @@ public class JavaDBRuntime {
 	private JavaDBRuntime() {
 	}
 
-//	public static JavaDBRuntime getInstance() {
-//		return l1Runtime;
-//	}
-
 	public static void putParent(Object k, Object p) {
 		table.put(k, p);
 	}
@@ -107,9 +103,9 @@ public class JavaDBRuntime {
 		}
 	}
 
-	public static void main(String args[]) {
-		JavaDBRuntime.getFieldValue(null, null, null);
-		JavaDBRuntime.setFieldValue(null, null, null, null);
-		JavaDBRuntime.registerField(null, null, null, null);
-	}
+	// public static void main(String args[]) {
+	// 	JavaDBRuntime.getFieldValue(null, null, null);
+	// 	JavaDBRuntime.setFieldValue(null, null, null, null);
+	// 	JavaDBRuntime.registerField(null, null, null, null);
+	// }
 }
