@@ -13,7 +13,6 @@ public class VCollection<A, B> with [VCollection A.myfield] ownedby B {
 
 		B b = ownerof this;
 		a.myfield.col.add(b);  //this is not infinite loop
-		//VCollection c = a.myfield;
 	}
 }
 
