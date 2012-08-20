@@ -32,40 +32,37 @@ aspect L1TypeCheck {
 		List<FieldVariable> fieldPars = type().getFieldPars();
 		List<parFieldArgAccess> fieldArgs = this.getFieldArguments();
 
-		if (fieldPars.getNumChild() != fieldArgs.getNumChild()) {
-			error("The number of field arguments to instantiated the class cannot match the declaration.");
-		} else {
-			//TODO move TO typecheck
-			for (int i = 0; i < fieldArgs.getNumChild(); i++) {
-				FieldVariable fv = fieldPars.getChild(i);
-				parFieldArgAccess fa = fieldArgs.getChild(i);
+		for (int i = 0; i < fieldArgs.getNumChild(); i++) {
+			FieldVariable fv = fieldPars.getChild(i);
+			parFieldArgAccess fa = fieldArgs.getChild(i);
 
-				TypeDecl ty1 = fv.getFieldTypeAccess().type();
-				SimpleSet decls = fa.getTypeAccess().type().memberFields(fa.getFieldName());
-				if (decls.size() != 1)
-					error("unknow error");
-				TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
-				
-				if (!ty1.original().equals(ty2.original())) {
-					error("The Type of field argument " + i + " cannot match to the declaration.");
-				}
+			TypeDecl ty1 = fv.getFieldTypeAccess().type();
+			SimpleSet decls = fa.getTypeAccess().type().memberFields(fa.getFieldName());
+			if (decls.size() != 1) {
+//				error("we shall already fix this error");
+				continue;
+			}
+			TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
+			
+			if (!ty1.original().equals(ty2.original())) {
+				error("The Type of field argument " + i + " cannot match to the declaration.");
+			}
 
-				TypeDecl rty1 = fv.getTargetTypeAccess().type();
-				TypeDecl rty2 = fa.getTypeAccess().type();
-				
-				if (rty1.isTypeVariable()) {
-					//do substitute for rt1
-					if (type() instanceof ParClassDecl) {
-						ParClassDecl parType = (ParClassDecl) type();
-						rty1 = parType.substitute((TypeVariable)rty1);
-					} else {
-						error("The class is instantiated without type argument to support the field parameters.");
-					}
+			TypeDecl rty1 = fv.getTargetTypeAccess().type();
+			TypeDecl rty2 = fa.getTypeAccess().type();
+			
+			if (rty1.isTypeVariable()) {
+				//do substitute for rt1
+				if (type() instanceof ParClassDecl) {
+					ParClassDecl parType = (ParClassDecl) type();
+					rty1 = parType.substitute((TypeVariable)rty1);
+				} else {
+					error("The class is instantiated without type argument to support the field parameters.");
 				}
-				
-				if (rty1 != null && rty2 != null && !rty1.equals(rty2)) {
-					error("The reciver type of field argument " + i + " cannot match to the declaration.");
-				}
+			}
+			
+			if (rty1 != null && rty2 != null && !rty1.equals(rty2)) {
+				error("The reciver type of field argument " + i + " cannot match to the declaration.");
 			}
 		}
 	}

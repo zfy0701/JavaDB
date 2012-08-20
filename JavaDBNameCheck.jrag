@@ -62,6 +62,40 @@ aspect JavaDBNameCheck {
 			refined();
 	}
 
+	// public void parFieldArgAccess.nameCheck() {
+	// 	super.nameCheck();
+	// 	SimpleSet decls = getTypeAccess().memberfields(getFieldName());
+	// 	if (decls == null || decls.size() < 1) {
+	// 		error(getFieldName() + " don't existed in class " + getTypeAccess().name());
+	// 	} else if (decls.size() > 1) {
+	// 		error("more than one field declare " + getFieldName() + " existed");
+	// 	}
+	// }
+
+	public void ParFieldClassInstanceExpr.nameCheck() {
+		super.nameCheck();
+		List<FieldVariable> fieldPars = type().getFieldPars();
+		List<parFieldArgAccess> fieldArgs = this.getFieldArguments();
+
+		if (fieldPars.getNumChild() != fieldArgs.getNumChild()) {
+			error("The number of field arguments to instantiated the class cannot match the declaration.");
+		} 
+		// else {
+		// 	for (int i = 0; i < fieldArgs.getNumChild(); i++) {
+		// 		FieldVariable fv = fieldPars.getChild(i);
+		// 		parFieldArgAccess fa = fieldArgs.getChild(i);
+
+		// 		TypeDecl ty = fv.getTargetTypeAccess().type();
+		// 		SimpleSet decls = ty.memberFields(fa.getFieldName());
+		// 		if (decls.size() == 0) {
+		// 			error("");
+		// 		} else if (decls.size() != 1)
+		// 			error("unknow error");
+		// 		}
+		// }
+	}
+
+
 	public void parFieldArgAccess.nameCheck() {
 		super.nameCheck();
 		SimpleSet decls = getTypeAccess().type().memberFields(getFieldName());

@@ -21,6 +21,8 @@ public class A<T> with [Integer B.fname, String B.f2] {
 		// A a2 = new A<B> with [C.f] (); //no such type [done]
 		//A a3 = new A<B> with [B.h] (); //no such field [done]
 		//A a4 = new A<B> with [B.g, B.f] ();
+		A a5 = new A<B> with [B.f, B.h] (); //no such field
+
 		A a4 = new A<B> with [B.f, B.g] ();
 		//A a4 = new A(); JavaDBRuntime.registerField(a4, "B", "fname", "f");
 		a4.test();
