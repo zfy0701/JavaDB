@@ -75,9 +75,17 @@ public class JavaDBRuntime {
 
 	public static void registerField(Object o, String classname, String parName,
 			String fieldName) {
-		Field f;
+		Field f = null;
 		try {
-			f = Class.forName(classname).getField(fieldName);
+			for (Class c = Class.forName(classname); f == null && c != null; c = c.getSuperclass()) {
+				try {
+					f = c.getDeclaredField(fieldName);
+				} catch (Exception e) {
+					f = null;
+				}
+			}
+			f.setAccessible(true);
+
 			JavaDBRuntime.fieldTable.put(new Pair<Object, String>(o, parName), f);
 		} catch (Exception e) {
 			e.printStackTrace();

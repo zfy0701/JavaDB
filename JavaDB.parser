@@ -69,11 +69,11 @@ List parfield_access_list_1 =
   | parfield_access_list.l COMMA parfield_access_1.p {:  return l.add(p);  :}
   ;
 
-ParFieldAccess parfield_access = 
-    name.t DOT IDENTIFIER                        {:  return new ParFieldAccess(t, IDENTIFIER);  :}
+parFieldArgAccess parfield_access = 
+    name.t DOT IDENTIFIER                        {:  return new parFieldArgAccess(t, IDENTIFIER);  :}
   ;
-ParFieldAccess parfield_access_1 = 
-    name.t DOT IDENTIFIER RBRACK                 {:  return new ParFieldAccess(t, IDENTIFIER);  :}
+parFieldArgAccess parfield_access_1 = 
+    name.t DOT IDENTIFIER RBRACK                 {:  return new parFieldArgAccess(t, IDENTIFIER);  :}
   ;
 
 Expr class_instance_creation_expression =

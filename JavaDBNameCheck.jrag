@@ -17,7 +17,7 @@ aspect JavaDBNameCheck {
 		return !c.isEmpty() ? c : lookupType(name);
 	}
 
-	eq ParFieldAccess.getTypeAccess().nameType() = NameType.TYPE_NAME;
+	eq parFieldArgAccess.getTypeAccess().nameType() = NameType.TYPE_NAME;
 
 	syn lazy boolean VarAccess.isParField() = isQualified() && hostType().memberParFields(qualifier().type(), name()) != null;
 
@@ -62,7 +62,7 @@ aspect JavaDBNameCheck {
 			refined();
 	}
 
-	public void ParFieldAccess.nameCheck() {
+	public void parFieldArgAccess.nameCheck() {
 		super.nameCheck();
 		SimpleSet decls = getTypeAccess().type().memberFields(getFieldName());
 		//TODO exclude statics

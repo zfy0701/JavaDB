@@ -10,6 +10,6 @@ L2GenericClassDecl : L1GenericClassDecl ::= Modifiers <ID:String> [SuperClassAcc
 
 FieldVariable : MemberDecl ::= FieldTypeAccess:Access TargetTypeAccess:Access <FieldName:String>;
 
-ParFieldAccess : Access ::= TypeAccess:Access <FieldName:String>;
+parFieldArgAccess : Access ::= TypeAccess:Access <FieldName:String>;
 
-ParFieldClassInstanceExpr : ClassInstanceExpr ::= FieldArgument:ParFieldAccess*;
+ParFieldClassInstanceExpr : ClassInstanceExpr ::= FieldArgument:parFieldArgAccess*;

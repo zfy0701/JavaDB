@@ -30,7 +30,7 @@ aspect L1TypeCheck {
 
 		//check the match of argument
 		List<FieldVariable> fieldPars = type().getFieldPars();
-		List<ParFieldAccess> fieldArgs = this.getFieldArguments();
+		List<parFieldArgAccess> fieldArgs = this.getFieldArguments();
 
 		if (fieldPars.getNumChild() != fieldArgs.getNumChild()) {
 			error("The number of field arguments to instantiated the class cannot match the declaration.");
@@ -38,7 +38,7 @@ aspect L1TypeCheck {
 			//TODO move TO typecheck
 			for (int i = 0; i < fieldArgs.getNumChild(); i++) {
 				FieldVariable fv = fieldPars.getChild(i);
-				ParFieldAccess fa = fieldArgs.getChild(i);
+				parFieldArgAccess fa = fieldArgs.getChild(i);
 
 				TypeDecl ty1 = fv.getFieldTypeAccess().type();
 				SimpleSet decls = fa.getTypeAccess().type().memberFields(fa.getFieldName());
