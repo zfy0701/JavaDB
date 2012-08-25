@@ -1,7 +1,7 @@
 
 package javadb;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.util.*;
 
 class Pair<A, B> {
@@ -61,6 +61,7 @@ public class JavaDBRuntime {
 
 	private final static HashMap<Object, Object> table = new HashMap<Object, Object>();
 	private final static HashMap<Pair<Object, String>, Field> fieldTable = new HashMap<Pair<Object, String>, Field>();
+	private final static HashMap<Pair<Object, String>, Method> methodTable = new HashMap<Pair<Object, String>, Method>();
 
 	private JavaDBRuntime() {
 	}
@@ -81,7 +82,6 @@ public class JavaDBRuntime {
 				try {
 					f = c.getDeclaredField(fieldName);
 				} catch (Exception e) {
-					f = null;
 				}
 			}
 			f.setAccessible(true);
@@ -111,6 +111,35 @@ public class JavaDBRuntime {
 		}
 	}
 
+	
+	public static void registerMethod(Object o, String classname, String parName,
+			String methodName, Class[] paramTypes) {
+		Method m = null;
+		try {
+			for (Class c = Class.forName(classname); m == null && c != null; c = c.getSuperclass()) {
+				try {
+					m = c.getDeclaredMethod(methodName, paramTypes);
+				} catch (Exception e) {
+				}
+			}
+			m.setAccessible(true);
+
+			JavaDBRuntime.methodTable.put(new Pair<Object, String>(o, parName), m);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Object callMethode(Object o, Object value, Object reciver, String parName, Object[] args) {
+		Method m = JavaDBRuntime.methodTable.get(new Pair<Object, String>(reciver, parName));
+		try {
+			return m.invoke(o, args);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	// public static void main(String args[]) {
 	// 	JavaDBRuntime.getFieldValue(null, null, null);
 	// 	JavaDBRuntime.setFieldValue(null, null, null, null);

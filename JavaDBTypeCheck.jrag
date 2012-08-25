@@ -44,7 +44,7 @@ aspect L1TypeCheck {
 			}
 			TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
 			
-			if (!ty1.original().equals(ty2.original())) {
+			if (!ty1.original().equals(ty2.original())) { //TODO use cleaner API
 				error("The Type of field argument " + i + " cannot match to the declaration.");
 			}
 
@@ -61,7 +61,7 @@ aspect L1TypeCheck {
 				}
 			}
 			
-			if (rty1 != null && rty2 != null && !rty1.equals(rty2)) {
+			if (rty1 != null && rty2 != null && !rty2.subtype(rty1)) {
 				error("The reciver type of field argument " + i + " cannot match to the declaration.");
 			}
 		}
