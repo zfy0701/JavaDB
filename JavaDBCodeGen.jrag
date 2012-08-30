@@ -33,6 +33,7 @@ aspect L1CodeGen {
 
 	refine GenericsCodegen public void VarAccess.emitStore(CodeGeneration gen) {
 		if (isParField()) {
+			FieldVariable fv = getParFieldVar();
 			//we already have the object and the target value in the stack
 
 			//now box the value if it is primitive, only isPrimitive seems have bugs
@@ -41,7 +42,7 @@ aspect L1CodeGen {
 
 			gen.emitLoadReference(0); //push this to stack
 
-			StringLiteral.push(gen, name()); //load field name string
+			IntegerLiteral.push(gen, fv.getPosition()); //load field name string
 
 			String classname = "javadb.JavaDBRuntime";
 			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)V";
@@ -56,11 +57,12 @@ aspect L1CodeGen {
 
 	refine GenericsCodegen public void VarAccess.createBCode(CodeGeneration gen) {
 		if (isParField()) {
+			FieldVariable fv = getParFieldVar();
 			gen.emitLoadReference(0); //push this to stack
 			createLoadQualifier(gen); //push the object who have the field to stack
 
 			//load field name string
-			StringLiteral.push(gen, name());
+			IntegerLiteral.push(gen, fv.getPosition());
 
 			String classname = "javadb.JavaDBRuntime";
 			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;";
@@ -88,11 +90,11 @@ aspect L1CodeGen {
 		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
 
 		String classname = "javadb.JavaDBRuntime";
-		String      desc1 = "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+		String      desc1 = "(Ljava/lang/Object;Ljava/lang/String;ILjava/lang/String;)V";
 		String      name1 = "registerField";
 		int index1 = gen.constantPool().addMethodref(classname, name1, desc1);
 
-		String      desc2 = "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"; //TODO
+		String      desc2 = "(Ljava/lang/Object;Ljava/lang/String;ILjava/lang/String;[Ljava/lang/Class;)V"; //TODO
 		String      name2 = "registerMethod";
 		int index2 = gen.constantPool().addMethodref(classname, name2, desc2);
 
@@ -103,7 +105,7 @@ aspect L1CodeGen {
 
 			gen.emitDup(); 																	//arg0: the new object
 			StringLiteral.push(gen, fa.getReceiverTypeAccess().type().fullName());			//arg1: recieve name
-			StringLiteral.push(gen, fv.getID()); 											//arg2: declaration name			
+			IntegerLiteral.push(gen, fv.getPosition()); 											//arg2: declaration name			
 			StringLiteral.push(gen, fa.getFieldName()); 									//arg3: actual field name
 
 			if (fv instanceof FieldVariable) {

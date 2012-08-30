@@ -1,10 +1,16 @@
 aspect L1 {
 
-	eq MemberVariable.isStatic() = false;
+//	syn boolean MemberVariable.isStatic() = false;
+
+	inh int MemberVariable.getPosition();
+	
+	eq L2ClassDecl.getMemberParameter(int i).getPosition() = i;
+
+	eq L2GenericClassDecl.getMemberParameter(int i).getPosition() = i;
 
 	//////////////////////// localNum
 
-	inh lazy int ClassInstanceExpr.localNum();
+	//inh lazy int ClassInstanceExpr.localNum();
 
 	eq FieldDeclaration.getInit().localNum() {
 		int localNum = 1;
@@ -47,5 +53,6 @@ aspect L1 {
 	eq L1GenericClassDecl.hasOwnerType() = hasOwnerClassAccess();
 	eq RawClassDecl.hasOwnerType() = original().hasOwnerType();
 	eq ParClassDecl.hasOwnerType() = original().hasOwnerType();
+
 }
 

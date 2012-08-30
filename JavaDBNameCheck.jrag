@@ -21,6 +21,12 @@ aspect JavaDBNameCheck {
 
 	syn lazy boolean VarAccess.isParField() = isQualified() && hostType().memberParFields(qualifier().type(), name()) != null;
 
+	syn FieldVariable VarAccess.getParFieldVar() {
+		if (isParField()) {
+			return hostType().memberParFields(qualifier().type(), name());
+		} else return null;
+	}
+
 	syn lazy boolean TypeDecl.isParMemberType() = false;
 	eq L2ClassDecl.isParMemberType() = true;
 	eq L2GenericClassDecl.isParMemberType() = true;
