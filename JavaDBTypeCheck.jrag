@@ -40,14 +40,14 @@ aspect L1TypeCheck {
 			TypeDecl ty2 = null;
 
 			if (fv instanceof FieldVariable) {
-				SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+				SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getMemberName());
 				if (decls.size() != 1) {
 					continue;
 				}
 				ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
 			} else {
 				MethodVariable methodVar = (MethodVariable) fv;
-				Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getFieldName());
+				Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getMemberName());
 				for (MethodDecl method: decls) {
 					
 					boolean flag = true;
