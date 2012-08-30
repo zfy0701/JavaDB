@@ -110,14 +110,14 @@ aspect JavaDBNameCheck {
 				ParMemberAccess fa = memberArgs.getChild(i);
 
 				if (fv instanceof FieldVariable) {
-					SimpleSet decls = fv.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+					SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
 					if (decls.isEmpty()) {
-      					error("no field named " + fv.getID() + " is accessible");
+      					error("no field named " + fa.getFieldName() + " is accessible");
 					}	
 				} else {
-					Collection decls = fv.getReceiverTypeAccess().type().memberMethods(fa.getFieldName());
+					Collection decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getFieldName());
 					if (decls.isEmpty()) {
-      					error("no method named " + fv.getID() + " is accessible");
+      					error("no method named " + fa.getFieldName() + " is accessible");
 					}
 				}
 			}
