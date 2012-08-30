@@ -30,14 +30,14 @@ aspect L1TypeCheck {
 
 		//check the match of argument
 		List<FieldVariable> fieldPars = type().getFieldPars();
-		List<parFieldArgAccess> fieldArgs = this.getFieldArguments();
+		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
 
 		for (int i = 0; i < fieldArgs.getNumChild(); i++) {
 			FieldVariable fv = fieldPars.getChild(i);
-			parFieldArgAccess fa = fieldArgs.getChild(i);
+			ParMemberAccess fa = fieldArgs.getChild(i);
 
-			TypeDecl ty1 = fv.getFieldTypeAccess().type();
-			SimpleSet decls = fa.getTypeAccess().type().memberFields(fa.getFieldName());
+			TypeDecl ty1 = fv.getTypeAccess().type();
+			SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
 			if (decls.size() != 1) {
 //				error("we shall already fix this error");
 				continue;
@@ -48,8 +48,8 @@ aspect L1TypeCheck {
 				error("The Type of field argument " + i + " cannot match to the declaration.");
 			}
 
-			TypeDecl rty1 = fv.getTargetTypeAccess().type();
-			TypeDecl rty2 = fa.getTypeAccess().type();
+			TypeDecl rty1 = fv.getReceiverTypeAccess().type();
+			TypeDecl rty2 = fa.getReceiverTypeAccess().type();
 			
 			if (rty1.isTypeVariable()) {
 				//do substitute for rt1

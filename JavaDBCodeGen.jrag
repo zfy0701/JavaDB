@@ -85,7 +85,7 @@ aspect L1CodeGen {
 
 		//iterate and register field
 		List<FieldVariable> fieldPars = type().getFieldPars();
-		List<parFieldArgAccess> fieldArgs = this.getFieldArguments();
+		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
 
 		String classname = "javadb.JavaDBRuntime";
 		String      desc = "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
@@ -94,10 +94,10 @@ aspect L1CodeGen {
 
 		for (int i = 0; i < fieldArgs.getNumChild(); i++) {
 			FieldVariable fv = fieldPars.getChild(i);
-			parFieldArgAccess fa = fieldArgs.getChild(i);
+			ParMemberAccess fa = fieldArgs.getChild(i);
 
 			gen.emitDup(); 															//arg0: the new object
-			StringLiteral.push(gen, fa.getTypeAccess().type().fullName());			//arg1: recieve name
+			StringLiteral.push(gen, fa.getReceiverTypeAccess().type().fullName());			//arg1: recieve name
 			StringLiteral.push(gen, fv.getFieldName()); 							//arg2: declaration name			
 			StringLiteral.push(gen, fa.getFieldName()); 							//arg3: actual field name
 

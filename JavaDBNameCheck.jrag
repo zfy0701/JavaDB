@@ -9,15 +9,15 @@ aspect JavaDBNameCheck {
 		return !c.isEmpty() ? c : lookupType(name);
 	}
 
-	eq L2ClassDecl.getFieldParameter(int i).nameType() = NameType.TYPE_NAME;
-	eq L2GenericClassDecl.getFieldParameter(int i).nameType() = NameType.TYPE_NAME;
+	eq L2ClassDecl.getMemberParameter(int i).nameType() = NameType.TYPE_NAME;
+	eq L2GenericClassDecl.getMemberParameter(int i).nameType() = NameType.TYPE_NAME;
 	
-	eq L2GenericClassDecl.getFieldParameter(int i).lookupType(String name) {
+	eq L2GenericClassDecl.getMemberParameter(int i).lookupType(String name) {
 		SimpleSet c = addTypeVariables(SimpleSet.emptySet, name);
 		return !c.isEmpty() ? c : lookupType(name);
 	}
 
-	eq parFieldArgAccess.getTypeAccess().nameType() = NameType.TYPE_NAME;
+	eq ParMemberAccess.getReceiverTypeAccess().nameType() = NameType.TYPE_NAME;
 
 	syn lazy boolean VarAccess.isParField() = isQualified() && hostType().memberParFields(qualifier().type(), name()) != null;
 
@@ -27,8 +27,8 @@ aspect JavaDBNameCheck {
 	eq RawClassDecl.isParFieldType() = original().isParFieldType();
 
 	syn lazy List TypeDecl.getFieldPars() = new List();
-	eq L2ClassDecl.getFieldPars() = getFieldParameters();
-	eq L2GenericClassDecl.getFieldPars() = getFieldParameters();
+	eq L2ClassDecl.getFieldPars() = getMemberParameters();
+	eq L2GenericClassDecl.getFieldPars() = getMemberParameters();
 	eq RawClassDecl.getFieldPars() = original().getFieldPars();
 	eq ParClassDecl.getFieldPars() = original().getFieldPars();
 
@@ -62,7 +62,7 @@ aspect JavaDBNameCheck {
 			refined();
 	}
 
-	// public void parFieldArgAccess.nameCheck() {
+	// public void ParMemberAccess.nameCheck() {
 	// 	super.nameCheck();
 	// 	SimpleSet decls = getTypeAccess().memberfields(getFieldName());
 	// 	if (decls == null || decls.size() < 1) {
@@ -75,7 +75,7 @@ aspect JavaDBNameCheck {
 	public void ParFieldClassInstanceExpr.nameCheck() {
 		super.nameCheck();
 		List<FieldVariable> fieldPars = type().getFieldPars();
-		List<parFieldArgAccess> fieldArgs = this.getFieldArguments();
+		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
 
 		if (fieldPars.getNumChild() != fieldArgs.getNumChild()) {
 			error("The number of field arguments to instantiated the class cannot match the declaration.");
@@ -83,9 +83,9 @@ aspect JavaDBNameCheck {
 		// else {
 		// 	for (int i = 0; i < fieldArgs.getNumChild(); i++) {
 		// 		FieldVariable fv = fieldPars.getChild(i);
-		// 		parFieldArgAccess fa = fieldArgs.getChild(i);
+		// 		ParMemberAccess fa = fieldArgs.getChild(i);
 
-		// 		TypeDecl ty = fv.getTargetTypeAccess().type();
+		// 		TypeDecl ty = fv.getReceiverTypeAccess().type();
 		// 		SimpleSet decls = ty.memberFields(fa.getFieldName());
 		// 		if (decls.size() == 0) {
 		// 			error("");
@@ -96,9 +96,9 @@ aspect JavaDBNameCheck {
 	}
 
 
-	public void parFieldArgAccess.nameCheck() {
+	public void ParMemberAccess.nameCheck() {
 		super.nameCheck();
-		SimpleSet decls = getTypeAccess().type().memberFields(getFieldName());
+		SimpleSet decls = getReceiverTypeAccess().type().memberFields(getFieldName());
 		//TODO exclude statics
 		if (decls.isEmpty()) {
       		error("no field named " + getFieldName() + " is accessible");

@@ -26,7 +26,7 @@ aspect L1 {
 	refine TypeAnalysis eq VarAccess.type() {
 		if (isParField()) {
 			FieldVariable fieldVar = hostType().memberParFields(qualifier().type(), name());
-			return fieldVar.getFieldTypeAccess().type();
+			return fieldVar.getTypeAccess().type();
 		} else
 			return refined();
 	}

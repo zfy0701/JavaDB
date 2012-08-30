@@ -59,16 +59,16 @@ aspect ParFields {
 
 	eq L2ClassDecl.localParFieldsMap() {
 		HashMap parFields = new HashMap();
-		for (FieldVariable fieldVar : getFieldParameterList()) {
-			parFields.put(new Pair(fieldVar.getTargetTypeAccess().type(), fieldVar.getFieldName()), fieldVar); //NOT SURE ABOUT THIS LINE
+		for (FieldVariable fieldVar : getMemberParameterList()) {
+			parFields.put(new Pair(fieldVar.getReceiverTypeAccess().type(), fieldVar.getFieldName()), fieldVar); //NOT SURE ABOUT THIS LINE
 		}
 		return parFields;
 	}
 
 	eq L2GenericClassDecl.localParFieldsMap() { //todo simplify it
 		HashMap parFields = new HashMap();
-		for (FieldVariable fieldVar : getFieldParameterList()) {
-			parFields.put(new Pair(fieldVar.getTargetTypeAccess().type(), fieldVar.getFieldName()), fieldVar); //NOT SURE ABOUT THIS LINE
+		for (FieldVariable fieldVar : getMemberParameterList()) {
+			parFields.put(new Pair(fieldVar.getReceiverTypeAccess().type(), fieldVar.getFieldName()), fieldVar); //NOT SURE ABOUT THIS LINE
 		}
 		return parFields;
 	}
