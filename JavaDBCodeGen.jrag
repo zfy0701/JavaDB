@@ -101,10 +101,16 @@ aspect L1CodeGen {
 			for (int i = 0; i < getNumArg(); ++i) {
 				gen.emitDup();
 				IntegerLiteral.push(gen, i);
-
-				getArg(i).createBCode(gen);
-				getArg(i).type().emitCastTo(gen, decl().getParameter(i).type()); // MethodInvocationConversion
-
+				
+				Expr arg = getArg(i);
+				arg.createBCode(gen);
+				
+				if (!arg.type().isReferenceType() && arg.type().isPrimitive()) {
+					arg.type().boxed().emitBoxingOperation(gen);
+				} else {
+					arg.type().emitCastTo(gen, mv.getArgumentTypes(i).type());
+				}
+				
 				gen.emit(Bytecode.AASTORE);	//store into arg3
 			}
 			
@@ -153,7 +159,7 @@ aspect L1CodeGen {
 				gen.emit(Bytecode.ANEWARRAY).add2(index_class);
 
 				//TODO BE TESTED
-				for (int j = 0; j > m; j++) {
+				for (int j = 0; j < m; j++) {
 					gen.emitDup();
 					IntegerLiteral.push(gen, j);
 

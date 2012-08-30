@@ -3,6 +3,7 @@
 public class B {
 	public int f = 1;
 	public int foo() { return 0; };
+	public int bar(int a, int b) { return a+b; };
 }
 
 public class A<T> with [int B.fname, int B.gname()] {

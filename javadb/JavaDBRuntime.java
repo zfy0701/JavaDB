@@ -92,20 +92,20 @@ public class JavaDBRuntime {
 		}
 	}
 
-	public static Object getFieldValue(Object reciver, Object o, int parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(reciver, parName));
+	public static Object getFieldValue(Object o, Object reciver, int parName) {
+		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(o, parName));
 		try {
-			return f.get(o);
+			return f.get(reciver);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
-	public static void setFieldValue(Object o, Object value, Object reciver, int parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(reciver, parName));
+	public static void setFieldValue(Object reciver, Object value, Object o, int parName) {
+		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(o, parName));
 		try {
-			f.set(o, value);
+			f.set(reciver, value);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -116,6 +116,8 @@ public class JavaDBRuntime {
 			String methodName, Class[] paramTypes) {
 		Method m = null;
 		try {
+//			System.out.println("test");
+
 			for (Class c = Class.forName(classname); m == null && c != null; c = c.getSuperclass()) {
 				try {
 					m = c.getDeclaredMethod(methodName, paramTypes);
@@ -131,6 +133,7 @@ public class JavaDBRuntime {
 	}
 	
 	public static Object callMethod(Object o, Object reciver, int parName, Object[] args) {
+		
 		Method m = JavaDBRuntime.methodTable.get(new Pair<Object, Integer>(o, parName));
 		try {
 			return m.invoke(reciver, args);
@@ -143,6 +146,18 @@ public class JavaDBRuntime {
 	
 	public static Class forNameNoException(String name) {
 		try {
+//			System.out.println("hello" + name);
+			
+			if (name.equals("@primitive.byte")) return byte.class;
+			if (name.equals("@primitive.short")) return short.class;
+			if (name.equals("@primitive.int")) return int.class;
+			if (name.equals("@primitive.long")) return long.class;
+			if (name.equals("@primitive.char")) return char.class;
+			if (name.equals("@primitive.float")) return float.class;
+			if (name.equals("@primitive.double")) return double.class;
+			if (name.equals("@primitive.boolean")) return boolean.class;
+			if (name.equals("@primitive.void")) return void.class;
+
 			return Class.forName(name);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -150,7 +165,17 @@ public class JavaDBRuntime {
 		}
 	}
 	
-	 public static void main(String args[]) throws ClassNotFoundException {
+	
+
+	 public static void main(String args[]) throws Exception {
+
+		 Test t = new Test();
+		 
+//		 int.class
+		 Method m = Test.class.getDeclaredMethod("foo", Class.forName("java/lang/int"));
+		 
+		 m.invoke(t, 1);
+		 
 //		JavaDBRuntime.getFieldValue(null, null, 0);
 //	 	JavaDBRuntime.setFieldValue(null, null, null, 0);
 //	 	
@@ -168,3 +193,10 @@ public class JavaDBRuntime {
 
 	}
 }
+
+class Test {
+	int foo(int a) {
+		return a;
+	}
+}
+
