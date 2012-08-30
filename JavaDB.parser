@@ -51,14 +51,14 @@ List member_parameter_list_1 =
   | member_parameter_list.l COMMA member_parameter_1.p {:  return l.add(p);  :}
   ;
   
-// List method_parameter_args = 
-//     type.t1                                  {: return new List().add(t1); :}
-//   | method_parameter_args.l COMMA type.t1    {: return l.add(t1);  :}
-//   ;
+List method_parameter_args = 
+    type.t1                                  {: return new List().add(t1); :}
+  | method_parameter_args.l COMMA type.t1    {: return l.add(t1);  :}
+  ;
 
 FieldVariable member_parameter =
     type.t1 name.t2 DOT IDENTIFIER               {:  return new FieldVariable(t1, t2, IDENTIFIER);  :}
-//  | type.t1 name.t2 DOT IDENTIFIER LPAREN  method_parameter_args.l? RPAREN               {:  return new MethodVariable(t1, t2, IDENTIFIER, l);  :}
+  | type.t1 name.t2 DOT IDENTIFIER LPAREN  method_parameter_args.l? RPAREN               {:  return new MethodVariable(t1, t2, IDENTIFIER, l);  :}
   ;
   
 FieldVariable member_parameter_1 =

@@ -21,16 +21,17 @@ aspect JavaDBNameCheck {
 
 	syn lazy boolean VarAccess.isParField() = isQualified() && hostType().memberParFields(qualifier().type(), name()) != null;
 
-	syn lazy boolean TypeDecl.isParFieldType() = false;
-	eq L2ClassDecl.isParFieldType() = true;
-	eq L2GenericClassDecl.isParFieldType() = true;
-	eq RawClassDecl.isParFieldType() = original().isParFieldType();
+	syn lazy boolean TypeDecl.isParMemberType() = false;
+	eq L2ClassDecl.isParMemberType() = true;
+	eq L2GenericClassDecl.isParMemberType() = true;
+	eq RawClassDecl.isParMemberType() = original().isParMemberType();
 
 	syn lazy List TypeDecl.getFieldPars() = new List();
 	eq L2ClassDecl.getFieldPars() = getMemberParameters();
 	eq L2GenericClassDecl.getFieldPars() = getMemberParameters();
 	eq RawClassDecl.getFieldPars() = original().getFieldPars();
 	eq ParClassDecl.getFieldPars() = original().getFieldPars();
+
 
 	// refine VariableScope eq Expr.qualifiedLookupVariable(String name) {
 	//  //      return VariableScope.Expr.qualifiedLookupVariable(name);
@@ -47,7 +48,7 @@ aspect JavaDBNameCheck {
 
 	refine Enums public void ClassInstanceExpr.nameCheck() {
 		TypeDecl ty = type();
-		if (type().isParFieldType()) {
+		if (type().isParMemberType()) {
 			if (this instanceof ParMemberClassInstanceExpr == false) {
 				error("class " + type().name() + " cannot be instantiated without any field argument");
 			}
