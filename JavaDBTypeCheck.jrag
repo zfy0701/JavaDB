@@ -29,15 +29,22 @@ aspect L1TypeCheck {
 		super.typeCheck();
 
 		//check the match of argument
-		List<FieldVariable> fieldPars = type().getFieldPars();
+		List<MemberVariable> fieldPars = type().getMemberPars();
 		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
 
 		for (int i = 0; i < fieldArgs.getNumChild(); i++) {
-			FieldVariable fv = fieldPars.getChild(i);
+			MemberVariable fv = fieldPars.getChild(i);
 			ParMemberAccess fa = fieldArgs.getChild(i);
 
 			TypeDecl ty1 = fv.getTypeAccess().type();
-			SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+			SimpleSet decls = null;
+
+			if (fv instanceof FieldVariable) {
+				decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+			} else {
+				//TODO: retrieve by name and parameters
+			}
+			
 			if (decls.size() != 1) {
 //				error("we shall already fix this error");
 				continue;

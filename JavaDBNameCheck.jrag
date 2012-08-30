@@ -26,12 +26,35 @@ aspect JavaDBNameCheck {
 	eq L2GenericClassDecl.isParMemberType() = true;
 	eq RawClassDecl.isParMemberType() = original().isParMemberType();
 
-	syn lazy List TypeDecl.getFieldPars() = new List();
-	eq L2ClassDecl.getFieldPars() = getMemberParameters();
-	eq L2GenericClassDecl.getFieldPars() = getMemberParameters();
-	eq RawClassDecl.getFieldPars() = original().getFieldPars();
-	eq ParClassDecl.getFieldPars() = original().getFieldPars();
+	// syn lazy List<FieldVariable> TypeDecl.getFieldPars() = new List();
+	// eq L2ClassDecl.getFieldPars() {
+	// 	List res = new List();
+	// 	for (MemberDecl pm : getMemberParameterList()) {
+	// 		if (pm instanceof FieldVariable) {
+	// 			res.add((FieldVariable)pm);
+	// 		}
+	// 	}
+	// 	return res;
+	// } 
 
+	// eq L2GenericClassDecl.getFieldPars()  {
+	// 	List res = new List();
+	// 	for (MemberDecl pm : getMemberParameterList()) {
+	// 		if (pm instanceof FieldVariable) {
+	// 			res.add((FieldVariable)pm);
+	// 		}
+	// 	}
+	// 	return res;
+	// } 
+
+	// eq RawClassDecl.getFieldPars() = original().getFieldPars();
+	// eq ParClassDecl.getFieldPars() = original().getFieldPars();
+
+	syn lazy List<MemberVariable> TypeDecl.getMemberPars() = new List();
+	eq L2ClassDecl.getMemberPars() = getMemberParameters();
+	eq L2GenericClassDecl.getMemberPars() = getMemberParameters();
+	eq RawClassDecl.getMemberPars() = original().getMemberPars();
+	eq ParClassDecl.getMemberPars() = original().getMemberPars();
 
 	// refine VariableScope eq Expr.qualifiedLookupVariable(String name) {
 	//  //      return VariableScope.Expr.qualifiedLookupVariable(name);
@@ -75,10 +98,10 @@ aspect JavaDBNameCheck {
 
 	public void ParMemberClassInstanceExpr.nameCheck() {
 		super.nameCheck();
-		List<FieldVariable> fieldPars = type().getFieldPars();
-		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
+		List<MemberVariable> memberPars = type().getMemberPars();
+		List<ParMemberAccess> memberArgs = this.getFieldArguments();
 
-		if (fieldPars.getNumChild() != fieldArgs.getNumChild()) {
+		if (memberPars.getNumChild() != memberArgs.getNumChild()) {
 			error("The number of field arguments to instantiated the class cannot match the declaration.");
 		} 
 		// else {

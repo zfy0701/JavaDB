@@ -4,9 +4,9 @@ L1ClassDecl : ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Impl
 
 L1GenericClassDecl : GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access];
 
-L2ClassDecl : L1ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access] MemberParameter:MemberDecl*;
+L2ClassDecl : L1ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access] MemberParameter:MemberVariable*;
 
-L2GenericClassDecl : L1GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access] MemberParameter:MemberDecl*;
+L2GenericClassDecl : L1GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access] MemberParameter:MemberVariable*;
 
 MemberVariable : MemberDecl ::= TypeAccess:Access ReceiverTypeAccess:Access <ID:String>;
 FieldVariable : MemberVariable ::= TypeAccess:Access ReceiverTypeAccess:Access <ID:String>;

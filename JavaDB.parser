@@ -56,12 +56,12 @@ List method_parameter_args =
   | method_parameter_args.l COMMA type.t1    {: return l.add(t1);  :}
   ;
 
-FieldVariable member_parameter =
+MemberVariable member_parameter =
     type.t1 name.t2 DOT IDENTIFIER               {:  return new FieldVariable(t1, t2, IDENTIFIER);  :}
   | type.t1 name.t2 DOT IDENTIFIER LPAREN  method_parameter_args.l? RPAREN               {:  return new MethodVariable(t1, t2, IDENTIFIER, l);  :}
   ;
   
-FieldVariable member_parameter_1 =
+MemberVariable member_parameter_1 =
     member_parameter.m RBRACK         {:  return m;  :}
   ;
 
