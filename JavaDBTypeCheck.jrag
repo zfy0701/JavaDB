@@ -37,19 +37,45 @@ aspect L1TypeCheck {
 			ParMemberAccess fa = fieldArgs.getChild(i);
 
 			TypeDecl ty1 = fv.getTypeAccess().type();
-			SimpleSet decls = null;
+			TypeDecl ty2 = null;
 
 			if (fv instanceof FieldVariable) {
-				decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+				SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+				if (decls.size() != 1) {
+					continue;
+				}
+				ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
 			} else {
-				//TODO: retrieve by name and parameters
+				MethodVariable methodVar = (MethodVariable) fv;
+				Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getFieldName());
+				for (MethodDecl method: decls) {
+					
+					boolean flag = true;
+
+					if (methodVar.getNumArgumentTypes() != method.getNumParameter()) flag = false;
+					else {
+						for (int j = 0; j < methodVar.getNumArgumentTypes(); j++) {
+							TypeDecl parType = methodVar.getArgumentTypes(j).type();
+							TypeDecl argType = method.getParameter(j).getTypeAccess().type();
+							
+							if (!parType.equals(argType)) {
+								flag = false;
+								break;
+							}
+						}
+					}
+
+					if (flag) {
+						ty2 = method.getTypeAccess().type(); 
+						break;
+					}
+				}
+				
+				if (ty2 == null) {
+					error("The method type of " + i + " cannont match the declaration");
+					continue;
+				}
 			}
-			
-			if (decls.size() != 1) {
-//				error("we shall already fix this error");
-				continue;
-			}
-			TypeDecl ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
 			
 			if (!ty1.original().equals(ty2.original())) { //TODO use cleaner API
 				error("The Type of field argument " + i + " cannot match to the declaration.");

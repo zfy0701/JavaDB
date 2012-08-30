@@ -5,7 +5,7 @@ public class B {
 	public int foo() { return 0; };
 }
 
-public class A<T> with [int B.fname] {
+public class A<T> with [int B.fname, int B.gname()] {
 	B b = new B();
 
 	void test() {
@@ -15,14 +15,12 @@ public class A<T> with [int B.fname] {
 		//Integer i = 3;
 		//int x = i;
 		System.out.println("test value = " + b.fname);
-		b.fname = b.fname * 2;
-		System.out.println("test value = " + b.fname);
 
-//		System.out.println("test value = " + b.funname());
+		System.out.println("test value = " + b.gname());
 	}
 
 	public static void main(String []args) {
-		A a = new A<B> with [B.f] ();
+		A a = new A<B> with [B.f, B.foo] ();
 		a.test();
 		
 		// A a2 = new A<B> with [B.foo] ();

@@ -21,7 +21,7 @@ aspect L1CodeGen {
 			gen.emitDup();
 
 			gen.emitLoadReference(0); //push this to stack
-			
+
 			String classname = "javadb.JavaDBRuntime";
 			String desc = "(Ljava/lang/Object;Ljava/lang/Object;)V";
 			String name = "putParent";
@@ -69,7 +69,7 @@ aspect L1CodeGen {
 			String      name = "getFieldValue";
 			int index = gen.constantPool().addMethodref(classname, name, desc);
 			gen.emit(Bytecode.INVOKESTATIC, 1).add2(index);
-			
+
 			//now box the value if it is primitive, only isPrimitive seems have bugs
 			if (!type().isReferenceType() && type().isPrimitive()) {
 				TypeDecl boxTy = type().boxed();
@@ -80,6 +80,38 @@ aspect L1CodeGen {
 
 		} else
 			refined(gen);
+	}
+
+	refine GenericsCodegen public void MethodAccess.createBCode(CodeGeneration gen) {
+		if (isParMethod()) {
+			MethodVariable mv = getParMethodVar();
+			String classname = "javadb.JavaDBRuntime";
+			String      desc = "(Ljava/lang/Object;Ljava/lang/Object;I[Ljava/lang/Object;)Ljava/lang/Object;";
+			String      name = "callMethod";
+			int call_index = gen.constantPool().addMethodref(classname, name, desc);
+
+			gen.emitLoadReference(0);			//arg0, push this to stack
+			createLoadQualifier(gen);			//arg1, receiver
+			IntegerLiteral.push(gen, mv.getPosition());	//arg2, the method index
+
+			int index_object = gen.constantPool().addClass("java/lang/Object");
+			IntegerLiteral.push(gen, getNumArg());
+			gen.emit(Bytecode.ANEWARRAY).add2(index_object); //arg3, the argument list
+
+			for (int i = 0; i < getNumArg(); ++i) {
+				gen.emitDup();
+				IntegerLiteral.push(gen, i);
+
+				getArg(i).createBCode(gen);
+				getArg(i).type().emitCastTo(gen, decl().getParameter(i).type()); // MethodInvocationConversion
+
+				gen.emit(Bytecode.AASTORE);	//store into arg3
+			}
+			
+			gen.emit(Bytecode.INVOKESTATIC, 1).add2(call_index);
+		} else {
+			refined(gen);
+		}
 	}
 
 	public void  ParMemberClassInstanceExpr.createBCode(CodeGeneration gen) {
@@ -103,15 +135,34 @@ aspect L1CodeGen {
 			MemberVariable fv = fieldPars.getChild(i);
 			ParMemberAccess fa = fieldArgs.getChild(i);
 
-			gen.emitDup(); 																	//arg0: the new object
-			StringLiteral.push(gen, fa.getReceiverTypeAccess().type().fullName());			//arg1: recieve name
-			IntegerLiteral.push(gen, fv.getPosition()); 									//arg2: declaration name			
-			StringLiteral.push(gen, fa.getFieldName()); 									//arg3: actual field name
+			gen.emitDup();                                                                  //arg0: the new object
+			StringLiteral.push(gen, fa.getReceiverTypeAccess().type().fullName());          //arg1: recieve name
+			IntegerLiteral.push(gen, fv.getPosition());                                     //arg2: declaration name
+			StringLiteral.push(gen, fa.getFieldName());                                     //arg3: actual field name
 
 			if (fv instanceof FieldVariable) {
 				gen.emit(Bytecode.INVOKESTATIC, 1).add2(index1);
 			} else {
-				//TODO, one more paramter
+				int index_class = gen.constantPool().addClass("java/lang/Class");
+				int index_forname =  gen.constantPool().addMethodref(classname, "forNameNoException", "(Ljava/lang/String;)Ljava/lang/Class;");
+
+				MethodVariable methodVar = (MethodVariable) fv;
+				int m = methodVar.getNumArgumentTypes();
+				IntegerLiteral.push(gen, m);
+
+				gen.emit(Bytecode.ANEWARRAY).add2(index_class);
+
+				//TODO BE TESTED
+				for (int j = 0; j > m; j++) {
+					gen.emitDup();
+					IntegerLiteral.push(gen, j);
+
+					StringLiteral.push(gen, methodVar.getArgumentTypes(j).type().fullName());
+					gen.emit(Bytecode.INVOKESTATIC, 1).add2(index_forname);
+
+					gen.emit(Bytecode.AASTORE);
+				}
+
 				gen.emit(Bytecode.INVOKESTATIC, 1).add2(index2);
 			}
 		}

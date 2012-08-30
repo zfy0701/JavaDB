@@ -27,34 +27,19 @@ aspect JavaDBNameCheck {
 		} else return null;
 	}
 
+
+	syn lazy boolean MethodAccess.isParMethod() = isQualified() && hostType().memberParMethods(qualifier().type(), name(), getArgs()) != null;
+
+	syn MethodVariable MethodAccess.getParMethodVar() {
+		if (isParMethod()) {
+			return hostType().memberParMethods(qualifier().type(), name(), getArgs());  //TODO query by parameters
+		} else return null;
+	}
+
 	syn lazy boolean TypeDecl.isParMemberType() = false;
 	eq L2ClassDecl.isParMemberType() = true;
 	eq L2GenericClassDecl.isParMemberType() = true;
 	eq RawClassDecl.isParMemberType() = original().isParMemberType();
-
-	// syn lazy List<FieldVariable> TypeDecl.getFieldPars() = new List();
-	// eq L2ClassDecl.getFieldPars() {
-	// 	List res = new List();
-	// 	for (MemberDecl pm : getMemberParameterList()) {
-	// 		if (pm instanceof FieldVariable) {
-	// 			res.add((FieldVariable)pm);
-	// 		}
-	// 	}
-	// 	return res;
-	// } 
-
-	// eq L2GenericClassDecl.getFieldPars()  {
-	// 	List res = new List();
-	// 	for (MemberDecl pm : getMemberParameterList()) {
-	// 		if (pm instanceof FieldVariable) {
-	// 			res.add((FieldVariable)pm);
-	// 		}
-	// 	}
-	// 	return res;
-	// } 
-
-	// eq RawClassDecl.getFieldPars() = original().getFieldPars();
-	// eq ParClassDecl.getFieldPars() = original().getFieldPars();
 
 	syn lazy List<MemberVariable> TypeDecl.getMemberPars() = new List();
 	eq L2ClassDecl.getMemberPars() = getMemberParameters();
@@ -92,6 +77,14 @@ aspect JavaDBNameCheck {
 			refined();
 	}
 
+	refine TypeHierarchyCheck public void MethodAccess.nameCheck() {
+		if (isParMethod()) {
+			//TODO: check subclass relation
+		} else 
+			refined();
+	}
+
+
 	// public void ParMemberAccess.nameCheck() {
 	// 	super.nameCheck();
 	// 	SimpleSet decls = getTypeAccess().memberfields(getFieldName());
@@ -107,31 +100,27 @@ aspect JavaDBNameCheck {
 		List<MemberVariable> memberPars = type().getMemberPars();
 		List<ParMemberAccess> memberArgs = this.getFieldArguments();
 
+		//TODO CHECK STATCI METHOD
 		if (memberPars.getNumChild() != memberArgs.getNumChild()) {
 			error("The number of field arguments to instantiated the class cannot match the declaration.");
 		} 
-		// else {
-		// 	for (int i = 0; i < fieldArgs.getNumChild(); i++) {
-		// 		FieldVariable fv = fieldPars.getChild(i);
-		// 		ParMemberAccess fa = fieldArgs.getChild(i);
+		else {
+			for (int i = 0; i < memberArgs.getNumChild(); i++) {
+				MemberVariable fv = memberPars.getChild(i);
+				ParMemberAccess fa = memberArgs.getChild(i);
 
-		// 		TypeDecl ty = fv.getReceiverTypeAccess().type();
-		// 		SimpleSet decls = ty.memberFields(fa.getFieldName());
-		// 		if (decls.size() == 0) {
-		// 			error("");
-		// 		} else if (decls.size() != 1)
-		// 			error("unknow error");
-		// 		}
-		// }
-	}
-
-
-	public void ParMemberAccess.nameCheck() {
-		super.nameCheck();
-		SimpleSet decls = getReceiverTypeAccess().type().memberFields(getFieldName());
-		//TODO exclude statics
-		if (decls.isEmpty()) {
-      		error("no field named " + getFieldName() + " is accessible");
+				if (fv instanceof FieldVariable) {
+					SimpleSet decls = fv.getReceiverTypeAccess().type().memberFields(fa.getFieldName());
+					if (decls.isEmpty()) {
+      					error("no field named " + fv.getID() + " is accessible");
+					}	
+				} else {
+					Collection decls = fv.getReceiverTypeAccess().type().memberMethods(fa.getFieldName());
+					if (decls.isEmpty()) {
+      					error("no method named " + fv.getID() + " is accessible");
+					}
+				}
+			}
 		}
 	}
 

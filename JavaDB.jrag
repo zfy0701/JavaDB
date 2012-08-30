@@ -3,10 +3,9 @@ aspect L1 {
 //	syn boolean MemberVariable.isStatic() = false;
 
 	inh int MemberVariable.getPosition();
-	
 	eq L2ClassDecl.getMemberParameter(int i).getPosition() = i;
-
 	eq L2GenericClassDecl.getMemberParameter(int i).getPosition() = i;
+
 
 	//////////////////////// localNum
 

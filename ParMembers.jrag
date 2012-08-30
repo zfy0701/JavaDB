@@ -51,9 +51,6 @@ aspect ParFields {
 		}
 	}
 
-	syn lazy FieldVariable TypeDecl.localParFields(TypeDecl type, String name) =
-	    localParFieldsMap().containsKey(new Pair(type, name)) ? (FieldVariable)localParFieldsMap().get(new Pair(type, name)) : null;
-
 	syn lazy HashMap TypeDecl.localParFieldsMap() = new HashMap();
 
 	eq L2ClassDecl.localParFieldsMap() {
@@ -92,7 +89,9 @@ aspect ParFields {
 
 	// member fields
 	eq ClassDecl.memberParFields(TypeDecl type, String name) {
-		FieldVariable field = localParFields(type, name);
+		//TODO SIMPLIFY
+		FieldVariable field = localParFieldsMap().containsKey(new Pair(type, name)) ? (FieldVariable)localParFieldsMap().get(new Pair(type, name)) : null;
+
 		if (field != null)
 			return field; // this causes hiding of fields in superclass and interfaces
 		if (hasSuperclass()) {
@@ -103,50 +102,72 @@ aspect ParFields {
 
 	//////////////////////////////////////
 
-	syn lazy MethodVariable TypeDecl.localParMethods(TypeDecl type, String name) =
-	    localParMethodsMap().containsKey(new Pair(type, name)) ? (MethodVariable)localParMethodsMap().get(new Pair(type, name)) : null;
-
-	syn lazy HashMap TypeDecl.localParMethodsMap() = new HashMap();
+	syn lazy HashMap<Pair, Collection> TypeDecl.localParMethodsMap() = new HashMap();
 
 	eq L2ClassDecl.localParMethodsMap() {
-		HashMap parMethods = new HashMap();
+		HashMap<Pair, Collection> parMethods = new HashMap();
 
 		for (MemberVariable pm : getMemberParameterList()) {
 			if (pm instanceof MethodVariable) {
 				MethodVariable methodVar = (MethodVariable) pm;
-				parMethods.put(new Pair(methodVar.getReceiverTypeAccess().type(), methodVar.getID()), methodVar); //NOT SURE ABOUT THIS LINE
+				Pair key = new Pair(methodVar.getReceiverTypeAccess().type(), methodVar.getID());
+				Collection val = parMethods.get(key);
+				if (val == null) {
+					val = new ArrayList();
+					parMethods.put(key, val);
+				}
+				val.add(methodVar);
 			}
 		}
 		return parMethods;
 	}
 
 	eq L2GenericClassDecl.localParMethodsMap() { //todo simplify it
-		HashMap parMethods = new HashMap();
+		HashMap<Pair, Collection> parMethods = new HashMap();
 
 		for (MemberVariable pm : getMemberParameterList()) {
 			if (pm instanceof MethodVariable) {
 				MethodVariable methodVar = (MethodVariable) pm;
-				parMethods.put(new Pair(methodVar.getReceiverTypeAccess().type(), methodVar.getID()), methodVar); //NOT SURE ABOUT THIS LINE
+				Pair key = new Pair(methodVar.getReceiverTypeAccess().type(), methodVar.getID());
+				Collection val = parMethods.get(key);
+				if (val == null) {
+					val = new ArrayList();
+					parMethods.put(key, val);
+				}
+				val.add(methodVar);
 			}
 		}
 		return parMethods;
 	}
 
-	syn lazy MethodVariable TypeDecl.memberParMethods(TypeDecl type, String name) = null;
+	syn lazy MethodVariable TypeDecl.memberParMethods(TypeDecl type, String name, List<Expr> argTypes) = null;
 
 	// member methods
-	eq ClassDecl.memberParMethods(TypeDecl type, String name) {
-		MethodVariable method = localParMethods(type, name);
-		if (method != null)
-			return method; // this causes hiding of fields in superclass and interfaces
-		if (hasSuperclass()) {
-			//TODO
+	eq ClassDecl.memberParMethods(TypeDecl type, String name, List<Expr> argTypes) {
+		Pair key = new Pair(type, name);
+		
+		Collection<MethodVariable> methods = localParMethodsMap().get(key);
+		
+		if (methods == null) return null;
+		
+		for (MethodVariable methodVar : methods) {
+			if (methodVar.getNumArgumentTypes() == argTypes.getNumChild()) {
+				boolean flag = true;
+				for (int j = 0; j < methodVar.getNumArgumentTypes(); j++) {
+					TypeDecl parType = methodVar.getArgumentTypes(j).type();
+					TypeDecl argType = argTypes.getChild(j).type();
+					
+					if (!parType.subtype(argType)) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) 
+					return methodVar;
+			}
 		}
-		return method;
+		return null;
 	}
-
-
-
 
 }
 

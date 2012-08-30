@@ -130,24 +130,41 @@ public class JavaDBRuntime {
 		}
 	}
 	
-	public static Object callMethode(Object o, Object value, Object reciver, String parName, Object[] args) {
-		Method m = JavaDBRuntime.methodTable.get(new Pair<Object, String>(reciver, parName));
+	public static Object callMethod(Object o, Object reciver, int parName, Object[] args) {
+		Method m = JavaDBRuntime.methodTable.get(new Pair<Object, Integer>(o, parName));
 		try {
-			return m.invoke(o, args);
+			return m.invoke(reciver, args);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
-	 public static void main(String args[]) {
-		JavaDBRuntime.getFieldValue(null, null, 0);
-	 	JavaDBRuntime.setFieldValue(null, null, null, 0);
-	 	
-	 	JavaDBRuntime.registerField(null, null, 0, null);
-
-	 	JavaDBRuntime.registerMethod(null, null, 0, null, null);
-	 	JavaDBRuntime.callMethode(null, null, 0, null, null);
+	
+	public static Class forNameNoException(String name) {
+		try {
+			return Class.forName(name);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	 public static void main(String args[]) throws ClassNotFoundException {
+//		JavaDBRuntime.getFieldValue(null, null, 0);
+//	 	JavaDBRuntime.setFieldValue(null, null, null, 0);
+//	 	
+//	 	JavaDBRuntime.registerField(null, null, 0, null);
+//
+//	 	JavaDBRuntime.registerMethod(null, null, 0, null, null);
+//	 	JavaDBRuntime.callMethod(null, null, 0, null);
+//	 	
+//	 	Class [] cls = new Class[2]; 
+//	 	
+//	 	//for (int i = 0; i < 2; i++) {
+//		cls[0] = JavaDBRuntime.forNameNoException("test");
+//		
+//		cls[1] = JavaDBRuntime.forNameNoException("test");
 
 	}
 }
