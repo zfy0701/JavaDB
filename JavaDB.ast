@@ -4,12 +4,13 @@ L1ClassDecl : ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Impl
 
 L1GenericClassDecl : GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access];
 
-L2ClassDecl : L1ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access] MemberParameter:FieldVariable*;
+L2ClassDecl : L1ClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* [OwnerClassAccess:Access] MemberParameter:MemberDecl*;
 
-L2GenericClassDecl : L1GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access] MemberParameter:FieldVariable*;
+L2GenericClassDecl : L1GenericClassDecl ::= Modifiers <ID:String> [SuperClassAccess:Access] Implements:Access* BodyDecl* TypeParameter:TypeVariable* [OwnerClassAccess:Access] MemberParameter:MemberDecl*;
 
 FieldVariable : MemberDecl ::= TypeAccess:Access ReceiverTypeAccess:Access <FieldName:String>;
+MethodVariable : MemberDecl ::= TypeAccess:Access ReceiverTypeAccess:Access <MethodName:String> ArgumentTypes:Access*;
 
 ParMemberAccess : Access ::= ReceiverTypeAccess:Access <FieldName:String>;
 
-ParFieldClassInstanceExpr : ClassInstanceExpr ::= FieldArgument:ParMemberAccess*;
+ParMemberClassInstanceExpr : ClassInstanceExpr ::= FieldArgument:ParMemberAccess*;

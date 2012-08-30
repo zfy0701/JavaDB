@@ -25,7 +25,7 @@ aspect L1TypeCheck {
 		}
 	}
 
-	public void ParFieldClassInstanceExpr.typeCheck() {
+	public void ParMemberClassInstanceExpr.typeCheck() {
 		super.typeCheck();
 
 		//check the match of argument

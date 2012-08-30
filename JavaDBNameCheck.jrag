@@ -48,7 +48,7 @@ aspect JavaDBNameCheck {
 	refine Enums public void ClassInstanceExpr.nameCheck() {
 		TypeDecl ty = type();
 		if (type().isParFieldType()) {
-			if (this instanceof ParFieldClassInstanceExpr == false) {
+			if (this instanceof ParMemberClassInstanceExpr == false) {
 				error("class " + type().name() + " cannot be instantiated without any field argument");
 			}
 		} 
@@ -72,7 +72,7 @@ aspect JavaDBNameCheck {
 	// 	}
 	// }
 
-	public void ParFieldClassInstanceExpr.nameCheck() {
+	public void ParMemberClassInstanceExpr.nameCheck() {
 		super.nameCheck();
 		List<FieldVariable> fieldPars = type().getFieldPars();
 		List<ParMemberAccess> fieldArgs = this.getFieldArguments();

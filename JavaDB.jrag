@@ -1,6 +1,7 @@
 aspect L1 {
 
 	eq FieldVariable.isStatic() = false;
+	eq MethodVariable.isStatic() = false;
 
 
 	//////////////////////// localNum

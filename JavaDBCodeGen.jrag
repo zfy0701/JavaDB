@@ -80,7 +80,7 @@ aspect L1CodeGen {
 			refined(gen);
 	}
 
-	public void  ParFieldClassInstanceExpr.createBCode(CodeGeneration gen) {
+	public void  ParMemberClassInstanceExpr.createBCode(CodeGeneration gen) {
 		super.createBCode(gen);
 
 		//iterate and register field

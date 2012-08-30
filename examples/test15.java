@@ -16,12 +16,14 @@ public class A<T> with [int B.fname] {
 		//int x = i;
 		System.out.println("test value = " + b.fname);
 		b.fname = b.fname * 2;
+		System.out.println("test value = " + b.fname);
+
 //		System.out.println("test value = " + b.funname());
 	}
 
 	public static void main(String []args) {
 		A a = new A<B> with [B.f] ();
-//		a.test();
+		a.test();
 		
 		// A a2 = new A<B> with [B.foo] ();
 		// a2.test();

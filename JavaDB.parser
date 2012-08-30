@@ -24,39 +24,45 @@ Expr unary_expression = OWNEROF unary_expression.e {: return new OwnerOfExpr(e);
 
 /************************************** L2 Parser ******************************************/
 ClassDecl class_declaration =
-    modifiers.m? CLASS IDENTIFIER WITH field_parameters.fs owner.o? super.s? interfaces.i? class_body.b 
+    modifiers.m? CLASS IDENTIFIER WITH member_parameters.fs owner.o? super.s? interfaces.i? class_body.b 
       {:
         return new L2ClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, o, fs);
       :}
   ;
 
 ClassDecl class_declaration =
-    modifiers.m? CLASS IDENTIFIER type_parameters.p WITH field_parameters.fs owner.o? super.s? interfaces.i? class_body.b 
+    modifiers.m? CLASS IDENTIFIER type_parameters.p WITH member_parameters.fs owner.o? super.s? interfaces.i? class_body.b 
       {:
         return new L2GenericClassDecl(new Modifiers(m), IDENTIFIER, s, i, b, p, o, fs);
       :}
   ;
 
-List field_parameters =
-    LBRACK field_parameter_list_1.l {:  return l;  :}
+List member_parameters =
+    LBRACK member_parameter_list_1.l {:  return l;  :}
   ;
   
-List field_parameter_list =
-    field_parameter_list.l COMMA field_parameter.p {:  return l.add(p);  :}
-  | field_parameter.p {:  return new List().add(p);  :}
+List member_parameter_list =
+    member_parameter_list.l COMMA member_parameter.p {:  return l.add(p);  :}
+  | member_parameter.p {:  return new List().add(p);  :}
   ;
   
-List field_parameter_list_1 =
-    field_parameter_1.p {:  return new List().add(p);  :}
-  | field_parameter_list.l COMMA field_parameter_1.p {:  return l.add(p);  :}
+List member_parameter_list_1 =
+    member_parameter_1.p {:  return new List().add(p);  :}
+  | member_parameter_list.l COMMA member_parameter_1.p {:  return l.add(p);  :}
   ;
   
-FieldVariable field_parameter =
+// List method_parameter_args = 
+//     type.t1                                  {: return new List().add(t1); :}
+//   | method_parameter_args.l COMMA type.t1    {: return l.add(t1);  :}
+//   ;
+
+FieldVariable member_parameter =
     type.t1 name.t2 DOT IDENTIFIER               {:  return new FieldVariable(t1, t2, IDENTIFIER);  :}
+//  | type.t1 name.t2 DOT IDENTIFIER LPAREN  method_parameter_args.l? RPAREN               {:  return new MethodVariable(t1, t2, IDENTIFIER, l);  :}
   ;
   
-FieldVariable field_parameter_1 =
-    type.t1 name.t2 DOT IDENTIFIER RBRACK         {:  return new FieldVariable(t1, t2, IDENTIFIER);  :}
+FieldVariable member_parameter_1 =
+    member_parameter.m RBRACK         {:  return m;  :}
   ;
 
 List parfield_access_list =
@@ -78,6 +84,6 @@ ParMemberAccess parfield_access_1 =
 
 Expr class_instance_creation_expression =
     NEW class_or_interface_type.t WITH LBRACK parfield_access_list_1.pl LPAREN argument_list.l? RPAREN subclass_body.b?
-    {: return new ParFieldClassInstanceExpr(t, l, b, pl); :}
+    {: return new ParMemberClassInstanceExpr(t, l, b, pl); :}
   ;
 
