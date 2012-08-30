@@ -30,7 +30,7 @@ aspect L1TypeCheck {
 
 		//check the match of argument
 		List<MemberVariable> fieldPars = type().getMemberPars();
-		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
+		List<ParMemberAccess> fieldArgs = this.getMemberArguments();
 
 		for (int i = 0; i < fieldArgs.getNumChild(); i++) {
 			MemberVariable fv = fieldPars.getChild(i);

@@ -125,7 +125,7 @@ aspect L1CodeGen {
 
 		//iterate and register field
 		List<MemberVariable> fieldPars = type().getMemberPars();
-		List<ParMemberAccess> fieldArgs = this.getFieldArguments();
+		List<ParMemberAccess> fieldArgs = this.getMemberArguments();
 
 		String classname = "javadb.JavaDBRuntime";
 		String      desc1 = "(Ljava/lang/Object;Ljava/lang/String;ILjava/lang/String;)V";

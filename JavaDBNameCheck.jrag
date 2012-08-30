@@ -98,7 +98,7 @@ aspect JavaDBNameCheck {
 	public void ParMemberClassInstanceExpr.nameCheck() {
 		super.nameCheck();
 		List<MemberVariable> memberPars = type().getMemberPars();
-		List<ParMemberAccess> memberArgs = this.getFieldArguments();
+		List<ParMemberAccess> memberArgs = this.getMemberArguments();
 
 		//TODO CHECK STATCI METHOD
 		if (memberPars.getNumChild() != memberArgs.getNumChild()) {

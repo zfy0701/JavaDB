@@ -14,4 +14,4 @@ MethodVariable : MemberVariable ::= TypeAccess:Access ReceiverTypeAccess:Access 
 
 ParMemberAccess ::= ReceiverTypeAccess:Access <MemberName:String>;
 
-ParMemberClassInstanceExpr : ClassInstanceExpr ::= FieldArgument:ParMemberAccess*;
+ParMemberClassInstanceExpr : ClassInstanceExpr ::= MemberArgument:ParMemberAccess*;
