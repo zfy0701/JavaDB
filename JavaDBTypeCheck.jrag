@@ -40,38 +40,38 @@ aspect L1TypeCheck {
 			TypeDecl ty2 = null;
 
 			if (fv instanceof FieldVariable) {
-				SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getMemberName());
-				if (decls.size() != 1) {
-					continue;
-				}
-				ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
+				// SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getMemberName());
+				// if (decls.size() != 1) {
+				// 	continue;
+				// }
+				// ty2 = ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type();
+				ty2 = fa.getFieldType();
 			} else {
-				MethodVariable methodVar = (MethodVariable) fv;
-				Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getMemberName());
-				for (MethodDecl method: decls) {
+				// MethodVariable methodVar = (MethodVariable) fv;
+				// Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getMemberName());
+				// for (MethodDecl method : decls) {
 					
-					boolean flag = true;
+				// 	boolean flag = true;
 
-					if (methodVar.getNumArgumentTypes() != method.getNumParameter()) flag = false;
-					else {
-						for (int j = 0; j < methodVar.getNumArgumentTypes(); j++) {
-							TypeDecl parType = methodVar.getArgumentTypes(j).type();
-							TypeDecl argType = method.getParameter(j).getTypeAccess().type();
+				// 	if (methodVar.getNumArgumentTypes() != method.getNumParameter()) flag = false;
+				// 	else {
+				// 		for (int j = 0; j < methodVar.getNumArgumentTypes(); j++) {
+				// 			TypeDecl parType = methodVar.getArgumentTypes(j).type();
+				// 			TypeDecl argType = method.getParameter(j).getTypeAccess().type();
 							
-							if (!parType.equals(argType)) {
-								flag = false;
-								break;
-							}
+				// 			if (!parType.equals(argType)) {
+				// 				flag = false;
+				// 				break;
+				// 			}	
+				// 		}
+				// 	}
 
-							
-						}
-					}
-
-					if (flag) {
-						ty2 = method.getTypeAccess().type(); 
-						break;
-					}
-				}
+				// 	if (flag) {
+				// 		ty2 = method.getTypeAccess().type(); 
+				// 		break;
+				// 	}
+				// }
+				ty2 = fa.getMethodType();
 				
 				if (ty2 == null) {
 					error("The method type of " + i + " cannont match the declaration");

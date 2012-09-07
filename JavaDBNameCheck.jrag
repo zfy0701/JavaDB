@@ -111,13 +111,13 @@ aspect JavaDBNameCheck {
 
 				if (fv instanceof FieldVariable) {
 					SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getMemberName());
-					if (decls.isEmpty()) {
-      					error("no field named " + fa.getMemberName() + " is accessible");
+					if (fa.getFieldType() == null) {
+      						error("no field or parameterized field named " + fa.getMemberName() + " is accessible");
 					}	
 				} else {
 					Collection decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getMemberName());
-					if (decls.isEmpty()) {
-      					error("no method named " + fa.getMemberName() + " is accessible");
+					if (decls.isEmpty() &&	hostType().hasMemberParMethods(fa.getReceiverTypeAccess().type(), fa.getMemberName()) == false) {
+      					error("no method or parameterized method named " + fa.getMemberName() + " is accessible");
 					}
 				}
 			}

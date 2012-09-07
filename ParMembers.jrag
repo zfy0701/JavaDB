@@ -173,6 +173,65 @@ aspect ParFields {
 		}
 		return null;
 	}
+
+	syn lazy boolean TypeDecl.hasMemberParMethods(TypeDecl type, String name) = false;
+
+	eq ClassDecl.hasMemberParMethods(TypeDecl type, String name) {
+		Pair key = new Pair(type, name);
+		Collection<MethodVariable> methods = localParMethodsMap().get(key);
+		return methods != null;
+	}
+
+	////////////////////////////////////////////////////////////
+
+	inh lazy MemberVariable ParMemberAccess.getDeclVariable();
+
+	eq ParMemberClassInstanceExpr.getMemberArgument(int i).getDeclVariable() {
+		TypeDecl ty = type().original();
+		if (ty instanceof L2ClassDecl) {
+			return ((L2ClassDecl)ty).getMemberParameter(i);
+		} else if (ty instanceof L2GenericClassDecl) {
+			return ((L2GenericClassDecl)ty).getMemberParameter(i);
+		} else return null; //impossible
+	}
+
+	inh lazy TypeDecl ParMemberAccess.getFieldType();	//if we use an par filed access to instantaite it again
+
+	eq ParMemberClassInstanceExpr.getMemberArgument(int i).getFieldType() {
+		ParMemberAccess fa = getMemberArgument(i);
+		if ( fa.getDeclVariable() instanceof MethodVariable ) return null;
+		FieldVariable declfv = (FieldVariable) fa.getDeclVariable();
+
+		SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getMemberName());
+		if (decls.isEmpty()) {
+			FieldVariable fv = hostType().memberParFields(fa.getReceiverTypeAccess().type(), fa.getMemberName());
+			if (fv != null) {
+				return fv.getTypeAccess().type();
+			} else return null;
+		}
+		else return ((FieldDeclaration) decls.iterator().next()).getTypeAccess().type(); //TODO check more 
+	}
+
+	inh lazy TypeDecl ParMemberAccess.getMethodType();
+
+	eq ParMemberClassInstanceExpr.getMemberArgument(int i).getMethodType() {
+		ParMemberAccess fa = getMemberArgument(i);
+		if ( fa.getDeclVariable() instanceof FieldVariable ) return null;
+
+		MethodVariable declmv = (MethodVariable) fa.getDeclVariable();
+		List declArgs = declmv.getArgumentTypesList();
+
+		Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getMemberName());
+
+		if (decls.isEmpty()) {
+			MethodVariable mv = hostType().memberParMethods(fa.getReceiverTypeAccess().type(), fa.getMemberName(), declArgs);
+			if (mv != null)
+				return mv.getTypeAccess().type();
+			else return null;
+		}
+		else return ((MethodDecl) decls.iterator().next()).getTypeAccess().type(); //TODO check more 
+	}
+
 }
 
 
