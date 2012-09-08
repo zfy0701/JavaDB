@@ -195,6 +195,25 @@ aspect ParFields {
 		} else return null; //impossible
 	}
 
+	inh lazy MemberVariable ParMemberAccess.getParVarAccess();
+
+	eq ParMemberClassInstanceExpr.getMemberArgument(int i).getParVarAccess() {
+		ParMemberAccess fa = getMemberArgument(i);
+		if ( fa.getDeclVariable() instanceof FieldVariable ) {
+			SimpleSet decls = fa.getReceiverTypeAccess().type().memberFields(fa.getMemberName());
+			if (decls.isEmpty()) 
+				return hostType().memberParFields(fa.getReceiverTypeAccess().type(), fa.getMemberName());
+		} else {
+			Collection<MethodDecl> decls = fa.getReceiverTypeAccess().type().memberMethods(fa.getMemberName());
+			if (decls.isEmpty()) {
+				MethodVariable declmv = (MethodVariable) fa.getDeclVariable();
+				List declArgs = declmv.getArgumentTypesList();		
+				return hostType().memberParMethods(fa.getReceiverTypeAccess().type(), fa.getMemberName(), declArgs);
+			}
+		}
+		return null;
+	}
+
 	inh lazy TypeDecl ParMemberAccess.getFieldType();	//if we use an par filed access to instantaite it again
 
 	eq ParMemberClassInstanceExpr.getMemberArgument(int i).getFieldType() {
@@ -229,7 +248,7 @@ aspect ParFields {
 				return mv.getTypeAccess().type();
 			else return null;
 		}
-		else return ((MethodDecl) decls.iterator().next()).getTypeAccess().type(); //TODO check more 
+		else return ((MethodDecl) decls.iterator().next()).getTypeAccess().type(); //no need check more, override method must return the same type
 	}
 
 }

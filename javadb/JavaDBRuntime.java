@@ -74,7 +74,7 @@ public class JavaDBRuntime {
 		return table.get(k);
 	}
 
-	public static void registerField(Object o, String classname, int parName,
+	public static void registerField(Object o, String classname, int parID,
 			String fieldName) {
 		Field f = null;
 		try {
@@ -86,14 +86,32 @@ public class JavaDBRuntime {
 			}
 			f.setAccessible(true);
 
-			JavaDBRuntime.fieldTable.put(new Pair<Object, Integer>(o, parName), f);
+			JavaDBRuntime.fieldTable.put(new Pair<Object, Integer>(o, parID), f);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static Object getFieldValue(Object o, Object reciver, int parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(o, parName));
+	public static void registerFieldVar(Object o, String classname, int parID,
+			Object owner, int ownerParID) {
+		Field f = null;
+		try {
+			for (Class c = Class.forName(classname); f == null && c != null; c = c.getSuperclass()) {
+				try {
+					f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(owner, ownerParID));
+				} catch (Exception e) {
+				}
+			}
+			f.setAccessible(true);
+			
+			JavaDBRuntime.fieldTable.put(new Pair<Object, Integer>(o, parID), f);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Object getFieldValue(Object o, Object reciver, int parID) {
+		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(o, parID));
 		try {
 			return f.get(reciver);
 		} catch (Exception e) {
@@ -102,8 +120,8 @@ public class JavaDBRuntime {
 		}
 	}
 	
-	public static void setFieldValue(Object reciver, Object value, Object o, int parName) {
-		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(o, parName));
+	public static void setFieldValue(Object reciver, Object value, Object o, int parID) {
+		Field f = JavaDBRuntime.fieldTable.get(new Pair<Object, Integer>(o, parID));
 		try {
 			f.set(reciver, value);
 		} catch (Exception e) {
@@ -112,7 +130,7 @@ public class JavaDBRuntime {
 	}
 
 	
-	public static void registerMethod(Object o, String classname, int parName,
+	public static void registerMethod(Object o, String classname, int parID,
 			String methodName, Class[] paramTypes) {
 		Method m = null;
 		try {
@@ -126,15 +144,36 @@ public class JavaDBRuntime {
 			}
 			m.setAccessible(true);
 
-			JavaDBRuntime.methodTable.put(new Pair<Object, Integer>(o, parName), m);
+			JavaDBRuntime.methodTable.put(new Pair<Object, Integer>(o, parID), m);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static Object callMethod(Object o, Object reciver, int parName, Object[] args) {
+	public static void registerMethodVar(Object o, String classname, int parID,
+			Object owner, int ownerParID) {
+		Method m = null;
+		try {
+//			System.out.println("test");
+
+			for (Class c = Class.forName(classname); m == null && c != null; c = c.getSuperclass()) {
+				try {
+					m = JavaDBRuntime.methodTable.get(new Pair<Object, Integer>(owner, ownerParID));
+				} catch (Exception e) {
+				}
+			}
+			m.setAccessible(true);
+
+			JavaDBRuntime.methodTable.put(new Pair<Object, Integer>(o, parID), m);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public static Object callMethod(Object o, Object reciver, int parID, Object[] args) {
 		
-		Method m = JavaDBRuntime.methodTable.get(new Pair<Object, Integer>(o, parName));
+		Method m = JavaDBRuntime.methodTable.get(new Pair<Object, Integer>(o, parID));
 		try {
 			return m.invoke(reciver, args);
 		} catch (Exception e) {
